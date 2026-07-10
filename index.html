@@ -49,6 +49,8 @@
     margin:0 auto;
     padding:16px 14px 0;
   }
+
+  /* 물용량 입력 카드 */
   .volume-card{
     background:var(--paper);
     border-radius:18px;
@@ -117,6 +119,8 @@
     border-color:var(--wheat);
     color:var(--ink);
   }
+
+  /* 단계 섹션 */
   .step{
     background:var(--paper);
     border-radius:18px;
@@ -174,11 +178,13 @@
   .toggle.on::after{ transform:translateX(22px); }
   .toggle.always{ background:var(--soil-2); opacity:.35; }
   .toggle.always::after{ transform:translateX(22px); }
+
   .step-body{
     padding:0 16px 16px;
     display:none;
   }
   .step-body.show{ display:block; }
+
   .ing-list{
     display:flex;
     flex-direction:column;
@@ -209,6 +215,14 @@
     color:#8a7f5f;
     margin-left:2px;
   }
+
+  .note{
+    font-size:.76rem;
+    color:#8a7f5f;
+    margin-top:10px;
+    line-height:1.5;
+  }
+
   .salt-choice{
     display:flex;
     gap:8px;
@@ -229,6 +243,44 @@
     border-color:var(--leaf);
     color:#fff;
   }
+
+  .range-box{
+    background:var(--wheat-soft);
+    border-radius:12px;
+    padding:12px 14px;
+    margin-bottom:12px;
+  }
+  .range-label{
+    font-size:.85rem;
+    font-weight:700;
+    color:var(--soil-2);
+    margin-bottom:8px;
+  }
+  .range-label span{
+    color:var(--ink);
+    font-weight:900;
+  }
+  .range-box input[type="range"]{
+    width:100%;
+    accent-color:var(--leaf-dark);
+  }
+  .range-scale{
+    display:flex;
+    justify-content:space-between;
+    font-size:.72rem;
+    color:#8a7f5f;
+    margin-top:2px;
+  }
+  .warning{
+    margin-top:10px;
+    background:var(--danger);
+    color:#fff;
+    font-weight:700;
+    font-size:.82rem;
+    padding:8px 10px;
+    border-radius:10px;
+    text-align:center;
+  }
   .caution-note{
     margin-top:10px;
     background:var(--wheat-soft);
@@ -240,6 +292,8 @@
     text-align:center;
     border:1px solid var(--wheat);
   }
+
+  /* 요약 카드 */
   .summary{
     background:var(--ink);
     color:var(--wheat-soft);
@@ -252,6 +306,16 @@
     font-size:1rem;
     color:var(--wheat);
   }
+  .summary .final-amt{
+    font-size:1.4rem;
+    font-weight:900;
+    color:#fff;
+  }
+  .summary .final-label{
+    font-size:.8rem;
+    opacity:.8;
+    margin-top:2px;
+  }
   .summary-row{
     display:flex;
     justify-content:space-between;
@@ -260,12 +324,14 @@
     font-size:.85rem;
   }
   .summary-row:last-child{ border-bottom:none; }
+
   footer{
     text-align:center;
     font-size:.72rem;
     color:#8a9b76;
     padding:22px 16px 10px;
   }
+
   .promo{
     display:flex;
     align-items:center;
@@ -297,11 +363,15 @@
 </style>
 </head>
 <body>
+
 <header>
   <h1>🌱 자닮미생물농약(JMP) 계산기</h1>
   <p>물 용량을 넣고, 필요한 단계만 켜서 배합비를 확인하세요</p>
 </header>
+
 <div class="wrap">
+
+  <!-- 물용량 입력 -->
   <div class="volume-card">
     <div class="label">기준 물 용량</div>
     <div class="volume-input-row">
@@ -312,6 +382,8 @@
     </div>
     <div class="presets" id="presets"></div>
   </div>
+
+  <!-- STEP 1: 기본 배양 (항상 적용) -->
   <div class="step">
     <div class="step-head">
       <div class="step-num">1</div>
@@ -329,6 +401,8 @@
       <div class="ing-list" id="list1"></div>
     </div>
   </div>
+
+  <!-- STEP 2: 데실글루코사이드 (①) -->
   <div class="step">
     <div class="step-head">
       <div class="step-num">2</div>
@@ -342,6 +416,8 @@
       <div class="ing-list" id="list2"></div>
     </div>
   </div>
+
+  <!-- STEP 3: 가성가리수용액 -->
   <div class="step">
     <div class="step-head" onclick="toggleStep(3)">
       <div class="step-num">3</div>
@@ -355,6 +431,8 @@
       <div class="ing-list" id="list3"></div>
     </div>
   </div>
+
+  <!-- STEP 4: 살균효과 추가 (자닮유황) -->
   <div class="step">
     <div class="step-head" onclick="toggleStep(4)">
       <div class="step-num">4</div>
@@ -369,6 +447,8 @@
       <div id="sulfurCaution"></div>
     </div>
   </div>
+
+  <!-- STEP 5: 살충효과 추가 (자닮오일) -->
   <div class="step">
     <div class="step-head" onclick="toggleStep(5)">
       <div class="step-num">5</div>
@@ -382,35 +462,178 @@
       <div class="ing-list" id="list5"></div>
     </div>
   </div>
+
+  <!-- 요약 (살균+살충 겸용일 때만 표시) -->
   <div class="summary" id="summaryCard" style="display:none;">
     <h2>📋 광범위 살충제 제조</h2>
     <div id="summaryBody"></div>
   </div>
+
   <div class="promo">
     <div class="promo-text">
       <div class="promo-title">📺 좌석훈 노래 재생목록</div>
       <div class="promo-sub">QR코드를 스캔하면 바로 이동합니다</div>
     </div>
     <a href="https://youtube.com/playlist?list=PLqHS-sDggR8KoS5KY0rLS01P3XjSAeWnD&si=7iNBKbs4BSfCPIOu" target="_blank" rel="noopener">
-      <img class="promo-qr" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAa4AAAGuCAIAAABHl3XNAAAJQ0lEQVR4nO3dO45dsRFAwSNDO3FgeP+LMRx4EcoEKHGqiBNQVJMzVelg3n3fAwa30d9+/fwRwNf2j+knADBPCgGkEEAKAZJCgKQQICkESAoBkkKA6vv6z//+1z//zvP4a/7z3/8deuT1e7W+7s77fO4VrZ37bpx7r3auu/bis5p6n6esX69TIYAUAkghQFIIkBQCJIUASSFAUgiQFAL04bTJ2tScw9q5u+TP3bs/Nedw7hN8cWLknM/3btz5Pu+8k06FAFIIIIUASSFAUgiQFAIkhQBJIUBSCNDmtMnai/fQ7zznqf9dOzcDMzVdc+cul3PzJHdOE629+Nt3KgSQQgApBEgKAZJCgKQQICkESAoBkkKAjk6bfD7n5ivOTRRMbXq585HvnHKZ2mzD75wKAaQQQAoBkkKApBAgKQRICgGSQoCkECDTJpeYmmRYzyqc208y9cjnJoKmJkamnvPn41QIIIUAUgiQFAIkhQBJIUBSCJAUAiSFAB2dNnEv+99xblZh57ovTl98vu00U7/BF3/7ToUAUggghQBJIUBSCJAUAiSFAEkhQFIIkBQC9OG0yYtzHF7cdbHj3FfnJgrmNr3c+ch3TrlMbbbhd06FAFIIIIUASSFAUgiQFAIkhQBJIUBSCJAUAjS42+TFfQlr687xKc7NKty5b2TH5/M555zVVO/zj06FAFIIIIUASSFAUgiQFAIkhQBJIUBSCNDmtMnaiwF+xjmnD889w1DnvJNOhQBSCCCFAEkhQFIIkBQCJIUASSFAUghQfV//+d/5fwRwNf2j+gnAjCMnAPCVOQGAFAJIIUBSCJAUAiSFAEkhQFIIkBQC9OG0ydrUNIKpTaRePauo06jDrXPPac4oVgAxBIhCgCgEiEKAKASIQoAoBIhCgCgEqL79+vlj+jlc5M75d+f2CKzd2X9d4VQIIIUAUgiQFAIkhQBJIUBSCJAUAiSFAEkhQFIIkBQCJIUASSFAUgiQFAIkhQBJIUBSCJAUAiSFAEkhQFIIkBQCJIUASSFAUgiQFAL0/wCjf1Fo" alt="좌석훈 노래 재생목록 QR코드">
+      <svg class="promo-qr" viewBox="0 0 43 43" xmlns="http://www.w3.org/2000/svg"><rect width="43" height="43" fill="#FBF8F1"/><path d="M1,1H2V2H1zM2,1H3V2H2zM3,1H4V2H3zM4,1H5V2H4zM5,1H6V2H5zM6,1H7V2H6zM7,1H8V2H7zM11,1H12V2H11zM13,1H14V2H13zM14,1H15V2H14zM19,1H20V2H19zM20,1H21V2H20zM21,1H22V2H21zM23,1H24V2H23zM24,1H25V2H24zM25,1H26V2H25zM28,1H29V2H28zM29,1H30V2H29zM30,1H31V2H30zM33,1H34V2H33zM35,1H36V2H35zM36,1H37V2H36zM37,1H38V2H37zM38,1H39V2H38zM39,1H40V2H39zM40,1H41V2H40zM41,1H42V2H41zM1,2H2V3H1zM7,2H8V3H7zM10,2H11V3H10zM12,2H13V3H12zM15,2H16V3H15zM16,2H17V3H16zM19,2H20V3H19zM21,2H22V3H21zM23,2H24V3H23zM28,2H29V3H28zM30,2H31V3H30zM35,2H36V3H35zM41,2H42V3H41zM1,3H2V4H1zM3,3H4V4H3zM4,3H5V4H4zM5,3H6V4H5zM7,3H8V4H7zM9,3H10V4H9zM10,3H11V4H10zM11,3H12V4H11zM12,3H13V4H12zM13,3H14V4H13zM14,3H15V4H14zM15,3H16V4H15zM17,3H18V4H17zM20,3H21V4H20zM27,3H28V4H27zM29,3H30V4H29zM30,3H31V4H30zM31,3H32V4H31zM32,3H33V4H32zM35,3H36V4H35zM37,3H38V4H37zM38,3H39V4H38zM39,3H40V4H39zM41,3H42V4H41zM1,4H2V5H1zM3,4H4V5H3zM4,4H5V5H4zM5,4H6V5H5zM7,4H8V5H7zM9,4H10V5H9zM11,4H12V5H11zM13,4H14V5H13zM14,4H15V5H14zM16,4H17V5H16zM17,4H18V5H17zM19,4H20V5H19zM20,4H21V5H20zM22,4H23V5H22zM23,4H24V5H23zM24,4H25V5H24zM29,4H30V5H29zM32,4H33V5H32zM35,4H36V5H35zM37,4H38V5H37zM38,4H39V5H38zM39,4H40V5H39zM41,4H42V5H41zM1,5H2V6H1zM3,5H4V6H3zM4,5H5V6H4zM5,5H6V6H5zM7,5H8V6H7zM9,5H10V6H9zM11,5H12V6H11zM17,5H18V6H17zM18,5H19V6H18zM21,5H22V6H21zM24,5H25V6H24zM25,5H26V6H25zM27,5H28V6H27zM29,5H30V6H29zM30,5H31V6H30zM31,5H32V6H31zM33,5H34V6H33zM35,5H36V6H35zM37,5H38V6H37zM38,5H39V6H38zM39,5H40V6H39zM41,5H42V6H41zM1,6H2V7H1zM7,6H8V7H7zM9,6H10V7H9zM11,6H12V7H11zM15,6H16V7H15zM16,6H17V7H16zM19,6H20V7H19zM21,6H22V7H21zM22,6H23V7H22zM23,6H24V7H23zM25,6H26V7H25zM26,6H27V7H26zM28,6H29V7H28zM29,6H30V7H29zM31,6H32V7H31zM35,6H36V7H35zM41,6H42V7H41zM1,7H2V8H1zM2,7H3V8H2zM3,7H4V8H3zM4,7H5V8H4zM5,7H6V8H5zM6,7H7V8H6zM7,7H8V8H7zM9,7H10V8H9zM11,7H12V8H11zM13,7H14V8H13zM15,7H16V8H15zM17,7H18V8H17zM19,7H20V8H19zM21,7H22V8H21zM23,7H24V8H23zM25,7H26V8H25zM27,7H28V8H27zM29,7H30V8H29zM31,7H32V8H31zM33,7H34V8H33zM35,7H36V8H35zM36,7H37V8H36zM37,7H38V8H37zM38,7H39V8H38zM39,7H40V8H39zM40,7H41V8H40zM41,7H42V8H41zM9,8H10V9H9zM10,8H11V9H10zM11,8H12V9H11zM13,8H14V9H13zM14,8H15V9H14zM16,8H17V9H16zM21,8H22V9H21zM22,8H23V9H22zM23,8H24V9H23zM24,8H25V9H24zM25,8H26V9H25zM28,8H29V9H28zM29,8H30V9H29zM1,9H2V10H1zM3,9H4V10H3zM4,9H5V10H4zM5,9H6V10H5zM6,9H7V10H6zM7,9H8V10H7zM10,9H11V10H10zM11,9H12V10H11zM13,9H14V10H13zM14,9H15V10H14zM16,9H17V10H16zM17,9H18V10H17zM18,9H19V10H18zM21,9H22V10H21zM25,9H26V10H25zM26,9H27V10H26zM27,9H28V10H27zM30,9H31V10H30zM33,9H34V10H33zM35,9H36V10H35zM36,9H37V10H36zM37,9H38V10H37zM38,9H39V10H38zM39,9H40V10H39zM2,10H3V11H2zM4,10H5V11H4zM6,10H7V11H6zM8,10H9V11H8zM10,10H11V11H10zM11,10H12V11H11zM13,10H14V11H13zM14,10H15V11H14zM18,10H19V11H18zM19,10H20V11H19zM20,10H21V11H20zM21,10H22V11H21zM24,10H25V11H24zM29,10H30V11H29zM30,10H31V11H30zM31,10H32V11H31zM32,10H33V11H32zM33,10H34V11H33zM36,10H37V11H36zM37,10H38V11H37zM39,10H40V11H39zM2,11H3V12H2zM4,11H5V12H4zM5,11H6V12H5zM7,11H8V12H7zM9,11H10V12H9zM11,11H12V12H11zM18,11H19V12H18zM19,11H20V12H19zM21,11H22V12H21zM22,11H23V12H22zM26,11H27V12H26zM28,11H29V12H28zM29,11H30V12H29zM33,11H34V12H33zM34,11H35V12H34zM36,11H37V12H36zM37,11H38V12H37zM1,12H2V13H1zM3,12H4V13H3zM4,12H5V13H4zM6,12H7V13H6zM8,12H9V13H8zM9,12H10V13H9zM10,12H11V13H10zM12,12H13V13H12zM14,12H15V13H14zM16,12H17V13H16zM22,12H23V13H22zM24,12H25V13H24zM27,12H28V13H27zM28,12H29V13H28zM29,12H30V13H29zM31,12H32V13H31zM32,12H33V13H32zM33,12H34V13H33zM34,12H35V13H34zM37,12H38V13H37zM38,12H39V13H38zM40,12H41V13H40zM41,12H42V13H41zM3,13H4V14H3zM7,13H8V14H7zM16,13H17V14H16zM22,13H23V14H22zM23,13H24V14H23zM24,13H25V14H24zM27,13H28V14H27zM28,13H29V14H28zM30,13H31V14H30zM32,13H33V14H32zM36,13H37V14H36zM38,13H39V14H38zM39,13H40V14H39zM40,13H41V14H40zM1,14H2V15H1zM2,14H3V15H2zM3,14H4V15H3zM8,14H9V15H8zM9,14H10V15H9zM10,14H11V15H10zM21,14H22V15H21zM22,14H23V15H22zM25,14H26V15H25zM28,14H29V15H28zM29,14H30V15H29zM34,14H35V15H34zM36,14H37V15H36zM37,14H38V15H37zM38,14H39V15H38zM40,14H41V15H40zM2,15H3V16H2zM4,15H5V16H4zM5,15H6V16H5zM6,15H7V16H6zM7,15H8V16H7zM8,15H9V16H8zM11,15H12V16H11zM12,15H13V16H12zM13,15H14V16H13zM14,15H15V16H14zM16,15H17V16H16zM18,15H19V16H18zM19,15H20V16H19zM20,15H21V16H20zM23,15H24V16H23zM27,15H28V16H27zM30,15H31V16H30zM31,15H32V16H31zM33,15H34V16H33zM34,15H35V16H34zM36,15H37V16H36zM37,15H38V16H37zM1,16H2V17H1zM4,16H5V17H4zM6,16H7V17H6zM9,16H10V17H9zM13,16H14V17H13zM15,16H16V17H15zM16,16H17V17H16zM19,16H20V17H19zM20,16H21V17H20zM21,16H22V17H21zM22,16H23V17H22zM23,16H24V17H23zM25,16H26V17H25zM29,16H30V17H29zM33,16H34V17H33zM35,16H36V17H35zM40,16H41V17H40zM41,16H42V17H41zM1,17H2V18H1zM2,17H3V18H2zM5,17H6V18H5zM7,17H8V18H7zM9,17H10V18H9zM10,17H11V18H10zM11,17H12V18H11zM12,17H13V18H12zM13,17H14V18H13zM14,17H15V18H14zM17,17H18V18H17zM18,17H19V18H18zM20,17H21V18H20zM23,17H24V18H23zM26,17H27V18H26zM34,17H35V18H34zM36,17H37V18H36zM38,17H39V18H38zM39,17H40V18H39zM40,17H41V18H40zM1,18H2V19H1zM3,18H4V19H3zM4,18H5V19H4zM6,18H7V19H6zM8,18H9V19H8zM10,18H11V19H10zM13,18H14V19H13zM15,18H16V19H15zM18,18H19V19H18zM21,18H22V19H21zM22,18H23V19H22zM24,18H25V19H24zM25,18H26V19H25zM26,18H27V19H26zM29,18H30V19H29zM31,18H32V19H31zM32,18H33V19H32zM33,18H34V19H33zM35,18H36V19H35zM36,18H37V19H36zM37,18H38V19H37zM38,18H39V19H38zM39,18H40V19H39zM41,18H42V19H41zM7,19H8V20H7zM10,19H11V20H10zM11,19H12V20H11zM12,19H13V20H12zM14,19H15V20H14zM15,19H16V20H15zM18,19H19V20H18zM22,19H23V20H22zM26,19H27V20H26zM27,19H28V20H27zM28,19H29V20H28zM29,19H30V20H29zM31,19H32V20H31zM34,19H35V20H34zM37,19H38V20H37zM2,20H3V21H2zM5,20H6V21H5zM8,20H9V21H8zM11,20H12V21H11zM12,20H13V21H12zM13,20H14V21H13zM15,20H16V21H15zM16,20H17V21H16zM17,20H18V21H17zM18,20H19V21H18zM19,20H20V21H19zM20,20H21V21H20zM22,20H23V21H22zM23,20H24V21H23zM25,20H26V21H25zM26,20H27V21H26zM29,20H30V21H29zM35,20H36V21H35zM37,20H38V21H37zM38,20H39V21H38zM41,20H42V21H41zM1,21H2V22H1zM2,21H3V22H2zM5,21H6V22H5zM6,21H7V22H6zM7,21H8V22H7zM10,21H11V22H10zM12,21H13V22H12zM14,21H15V22H14zM16,21H17V22H16zM21,21H22V22H21zM22,21H23V22H22zM24,21H25V22H24zM27,21H28V22H27zM28,21H29V22H28zM31,21H32V22H31zM32,21H33V22H32zM33,21H34V22H33zM36,21H37V22H36zM37,21H38V22H37zM38,21H39V22H38zM40,21H41V22H40zM1,22H2V23H1zM2,22H3V23H2zM4,22H5V23H4zM6,22H7V23H6zM12,22H13V23H12zM14,22H15V23H14zM16,22H17V23H16zM17,22H18V23H17zM18,22H19V23H18zM19,22H20V23H19zM20,22H21V23H20zM23,22H24V23H23zM30,22H31V23H30zM33,22H34V23H33zM35,22H36V23H35zM36,22H37V23H36zM37,22H38V23H37zM40,22H41V23H40zM41,22H42V23H41zM1,23H2V24H1zM2,23H3V24H2zM3,23H4V24H3zM5,23H6V24H5zM7,23H8V24H7zM8,23H9V24H8zM9,23H10V24H9zM11,23H12V24H11zM14,23H15V24H14zM15,23H16V24H15zM17,23H18V24H17zM21,23H22V24H21zM23,23H24V24H23zM27,23H28V24H27zM28,23H29V24H28zM29,23H30V24H29zM30,23H31V24H30zM33,23H34V24H33zM34,23H35V24H34zM36,23H37V24H36zM38,23H39V24H38zM39,23H40V24H39zM3,24H4V25H3zM8,24H9V25H8zM10,24H11V25H10zM11,24H12V25H11zM12,24H13V25H12zM13,24H14V25H13zM14,24H15V25H14zM16,24H17V25H16zM17,24H18V25H17zM19,24H20V25H19zM20,24H21V25H20zM22,24H23V25H22zM23,24H24V25H23zM24,24H25V25H24zM27,24H28V25H27zM33,24H34V25H33zM34,24H35V25H34zM37,24H38V25H37zM38,24H39V25H38zM40,24H41V25H40zM2,25H3V26H2zM3,25H4V26H3zM4,25H5V26H4zM7,25H8V26H7zM8,25H9V26H8zM12,25H13V26H12zM15,25H16V26H15zM16,25H17V26H16zM18,25H19V26H18zM23,25H24V26H23zM25,25H26V26H25zM26,25H27V26H25zM28,25H29V26H28zM29,25H30V26H29zM30,25H31V26H30zM32,25H33V26H32zM34,25H35V26H34zM36,25H37V26H36zM39,25H40V26H39zM40,25H41V26H40zM41,25H42V26H41zM1,26H2V27H1zM2,26H3V27H2zM3,26H4V27H3zM4,26H5V27H4zM6,26H7V27H6zM8,26H9V27H8zM9,26H10V27H9zM10,26H11V27H10zM13,26H14V27H13zM14,26H15V27H14zM17,26H18V27H17zM18,26H19V27H18zM19,26H20V27H19zM20,26H21V27H20zM21,26H22V27H21zM23,26H24V27H23zM24,26H25V27H24zM29,26H30V27H29zM32,26H33V27H32zM35,26H36V27H35zM37,26H38V27H36zM38,26H39V27H38zM40,26H41V27H40zM2,27H3V28H2zM3,27H4V28H3zM6,27H7V28H6zM7,27H8V28H7zM9,27H10V28H9zM10,27H11V28H10zM12,27H13V28H12zM13,27H14V28H13zM15,27H16V28H15zM19,27H20V28H19zM27,27H28V28H27zM28,27H29V28H28zM31,27H32V28H31zM33,27H34V28H33zM34,27H35V28H34zM35,27H36V28H35zM37,27H38V28H37zM2,28H3V29H2zM3,28H4V29H3zM4,28H5V29H4zM5,28H6V29H5zM9,28H10V29H9zM12,28H13V29H12zM13,28H14V29H13zM16,28H17V29H16zM17,28H18V29H17zM21,28H22V29H21zM22,28H23V29H22zM23,28H24V29H23zM24,28H25V29H24zM25,28H26V29H25zM28,28H29V29H28zM29,28H30V29H29zM32,28H33V29H32zM33,28H34V29H33zM37,28H38V29H37zM38,28H39V29H38zM40,28H41V29H40zM2,29H3V30H2zM3,29H4V30H3zM4,29H5V30H4zM5,29H6V30H5zM7,29H8V30H7zM10,29H11V30H10zM12,29H13V30H12zM16,29H17V30H16zM18,29H19V30H18zM19,29H20V30H19zM20,29H21V30H20zM21,29H22V30H21zM23,29H24V30H23zM25,29H26V30H25zM26,29H27V30H26zM27,29H28V30H27zM28,29H29V30H28zM29,29H30V30H29zM32,29H33V30H32zM33,29H34V30H33zM38,29H39V30H38zM39,29H40V30H39zM1,30H2V31H1zM3,30H4V31H3zM4,30H5V31H4zM5,30H6V31H5zM9,30H10V31H9zM11,30H12V31H11zM12,30H13V31H12zM13,30H14V31H13zM28,30H29V31H28zM31,30H32V31H31zM32,30H33V31H32zM33,30H34V31H33zM34,30H35V31H34zM36,30H37V31H36zM37,30H38V31H37zM38,30H39V31H38zM39,30H40V31H39zM41,30H42V31H41zM1,31H2V32H1zM3,31H4V32H3zM4,31H5V32H4zM5,31H6V32H5zM7,31H8V32H7zM8,31H9V32H8zM9,31H10V32H9zM12,31H13V32H12zM14,31H15V32H14zM16,31H17V32H16zM17,31H18V32H17zM18,31H19V32H18zM19,31H20V32H19zM21,31H22V32H21zM22,31H23V32H22zM24,31H25V32H24zM25,31H26V32H25zM26,31H27V32H26zM27,31H28V32H27zM28,31H29V32H28zM29,31H30V32H29zM31,31H32V32H31zM33,31H34V32H33zM34,31H35V32H34zM35,31H36V32H35zM37,31H38V32H37zM38,31H39V32H38zM39,31H40V32H39zM1,32H2V33H1zM4,32H5V33H4zM5,32H6V33H5zM8,32H9V33H8zM9,32H10V33H9zM10,32H11V33H10zM14,32H15V33H14zM17,32H18V33H17zM22,32H23V33H22zM23,32H24V33H23zM24,32H25V33H24zM28,32H29V33H28zM32,32H33V33H32zM33,32H34V33H33zM34,32H35V33H34zM35,32H36V33H35zM36,32H37V33H36zM38,32H39V33H38zM40,32H41V33H40zM1,33H2V34H1zM4,33H5V34H4zM6,33H7V34H6zM7,33H8V34H7zM8,33H9V34H8zM10,33H11V34H10zM11,33H12V34H11zM13,33H14V34H13zM14,33H15V34H14zM16,33H17V34H16zM18,33H19V34H18zM19,33H20V34H19zM22,33H23V34H22zM23,33H24V34H23zM24,33H25V34H24zM25,33H26V34H25zM26,33H27V34H26zM27,33H28V34H27zM28,33H29V34H28zM29,33H30V34H29zM30,33H31V34H30zM32,33H33V34H32zM33,33H34V34H33zM34,33H35V34H34zM35,33H36V34H35zM36,33H37V34H36zM37,33H38V34H37zM39,33H40V34H39zM40,33H41V34H40zM9,34H10V35H9zM12,34H13V35H12zM14,34H15V35H14zM15,34H16V35H15zM17,34H18V35H17zM21,34H22V35H21zM24,34H25V35H24zM27,34H28V35H27zM28,34H29V35H28zM29,34H30V35H29zM30,34H31V35H30zM31,34H32V35H31zM32,34H33V35H32zM33,34H34V35H33zM37,34H38V35H37zM41,34H42V35H41zM1,35H2V36H1zM2,35H3V36H2zM3,35H4V36H3zM4,35H5V36H4zM5,35H6V36H5zM6,35H7V36H6zM7,35H8V36H7zM12,35H13V36H12zM16,35H17V36H16zM17,35H18V36H17zM19,35H20V36H19zM23,35H24V36H23zM28,35H29V36H28zM29,35H30V36H29zM30,35H31V36H30zM33,35H34V36H33zM35,35H36V36H35zM37,35H38V36H37zM38,35H39V36H38zM39,35H40V36H39zM1,36H2V37H1zM7,36H8V37H7zM9,36H10V37H9zM10,36H11V37H10zM11,36H12V37H11zM12,36H13V37H12zM13,36H14V37H13zM14,36H15V37H14zM15,36H16V37H15zM17,36H18V37H17zM20,36H21V37H20zM21,36H22V37H21zM24,36H25V37H24zM25,36H26V37H25zM27,36H28V37H27zM28,36H29V37H28zM29,36H30V37H29zM30,36H31V37H30zM31,36H32V37H31zM32,36H33V37H32zM33,36H34V37H33zM37,36H38V37H37zM1,37H2V38H1zM3,37H4V38H3zM4,37H5V38H4zM5,37H6V38H5zM7,37H8V38H7zM9,37H10V38H9zM13,37H14V38H13zM19,37H20V38H19zM20,37H21V38H20zM21,37H22V38H21zM22,37H23V38H22zM23,37H24V38H23zM25,37H26V38H25zM28,37H29V38H28zM29,37H30V38H29zM33,37H34V38H33zM34,37H35V38H34zM35,37H36V38H35zM36,37H37V38H36zM37,37H38V38H37zM38,37H39V38H38zM39,37H40V38H39zM40,37H41V38H40zM41,37H42V38H41zM1,38H2V39H1zM3,38H4V39H3zM4,38H5V39H4zM5,38H6V39H5zM7,38H8V39H7zM9,38H10V39H9zM10,38H11V39H10zM11,38H12V39H11zM14,38H15V39H14zM16,38H17V39H16zM17,38H18V39H17zM21,38H22V39H21zM22,38H23V39H22zM24,38H25V39H24zM26,38H27V39H26zM27,38H28V39H27zM28,38H29V39H28zM29,38H30V39H29zM31,38H32V39H31zM32,38H33V39H32zM33,38H34V39H33zM34,38H35V39H34zM36,38H37V39H36zM38,38H39V39H38zM1,39H2V40H1zM3,39H4V40H3zM4,39H5V40H4zM5,39H6V40H5zM7,39H8V40H7zM9,39H10V40H9zM10,39H11V40H10zM14,39H15V40H14zM15,39H16V40H15zM16,39H17V40H16zM19,39H20V40H19zM21,39H22V40H21zM22,39H23V40H22zM26,39H27V40H26zM27,39H28V40H27zM28,39H29V40H28zM34,39H35V40H34zM35,39H36V40H35zM36,39H37V40H36zM37,39H38V40H37zM39,39H40V40H39zM1,40H2V41H1zM7,40H8V41H7zM10,40H11V41H10zM12,40H13V41H12zM13,40H14V41H13zM17,40H18V41H17zM20,40H21V41H20zM21,40H22V41H21zM22,40H23V41H22zM24,40H25V41H24zM28,40H29V41H28zM32,40H33V41H32zM33,40H34V41H33zM37,40H38V41H37zM38,40H39V41H38zM40,40H41V41H40zM1,41H2V42H1zM2,41H3V42H2zM3,41H4V42H3zM4,41H5V42H4zM5,41H6V42H5zM6,41H7V42H6zM7,41H8V42H7zM9,41H10V42H9zM13,41H14V42H13zM15,41H16V42H15zM19,41H20V42H19zM20,41H21V42H20zM23,41H24V42H23zM25,41H26V42H25zM26,41H27V42H26zM27,41H28V42H27zM29,41H30V42H29zM30,41H31V42H30zM34,41H35V42H34zM36,41H37V42H36zM37,41H38V42H37z" fill="#241F14"/></svg>
     </a>
   </div>
+
   <footer>2025년 4월 29일 자닮 조영상대표 공개 기술 기준 · 1L 기준 비율로 자동 환산됩니다<br>제작 : 좌석훈</footer>
 </div>
+
 <script>
-const RATIO = {water1:1000,potatoStarch:1,humus:1,salt:1,vinegar:40,potatoSilkoside:2,causticPotash:1,water3:1,jadalSulfur:2,maxWaterSulfur:3,jadalOil:10,maxWaterOil:20};
+// ── 1L 기준 배합 비율 (표에서 1,2,5,10,20,50,100L 행이 서로 일치하는 값으로 검증됨) ──
+const RATIO = {
+  water1: 1000,     // 배양용 물 (ml)
+  potatoStarch: 1,  // 감자전분 (g)
+  humus: 1,         // 부엽토 (g)
+  salt: 1,          // 천일염 (g)
+  vinegar: 40,       // 바닷물 (ml)
+  potatoSilkoside: 2, // ②데실글루코사이드 (ml)
+  causticPotash: 1,   // 가성가리 (g)
+  water3: 1,        // 가성가리 희석수 - 가리와 동일량 (ml)
+  jadalSulfur: 2,      // 자닮유황 (ml)
+  maxWaterSulfur: 3,    // 자닮유황최대 (ml)
+  jadalOil: 10,          // 자닮오일 (ml)
+  maxWaterOil: 20         // 자닮오일 사용시 최대 희석수 (ml)
+};
+
 const PRESETS = [1000,500,400,300,200,100,50,20,10,5,2,1];
-function fmt(n){if(n===0)return"0";let r=Math.round(n*100)/100;return r.toLocaleString('ko-KR',{maximumFractionDigits:2});}
-function volUnit(ml){if(ml>=1000){return`${fmt(ml)}<small>ml</small> <small>(${fmt(ml/1000)}L)</small>`;}return`${fmt(ml)}<small>ml</small>`;}
-function wUnit(g){if(g>=1000){return`${fmt(g)}<small>g</small> <small>(${fmt(g/1000)}kg)</small>`;}return`${fmt(g)}<small>g</small>`;}
-const stepState={3:false,4:false,5:false};let saltChoice='salt';
-function chooseSalt(choice){saltChoice=choice;document.querySelectorAll('.salt-btn').forEach(b=>{b.classList.toggle('active',b.dataset.choice===choice);});render();}
-function buildPresets(){const box=document.getElementById('presets');box.innerHTML='';PRESETS.forEach(v=>{const b=document.createElement('button');b.textContent=v+'L';b.onclick=()=>{document.getElementById('volumeInput').value=v;onVolumeChange();};b.dataset.v=v;box.appendChild(b);});}
-function stepVolume(dir){const input=document.getElementById('volumeInput');let v=parseFloat(input.value)||0;v=Math.max(0.1,v+dir);input.value=v;onVolumeChange();}
-function toggleStep(n){stepState[n]=!stepState[n];document.getElementById('toggle'+n).classList.toggle('on',stepState[n]);document.getElementById('body'+n).classList.toggle('show',stepState[n]);render();}
-function onVolumeChange(){const v=parseFloat(document.getElementById('volumeInput').value)||0;document.querySelectorAll('#presets button').forEach(b=>{b.classList.toggle('active',parseFloat(b.dataset.v)===v);});render();}
-function render(){const L=parseFloat(document.getElementById('volumeInput').value)||0;const saltRow=saltChoice==='salt'?`<div class="ing-row"><span class="ing-name">천일염</span><span class="ing-amt">${wUnit(RATIO.salt*L)}</span></div>`:`<div class="ing-row"><span class="ing-name">바닷물</span><span class="ing-amt">${volUnit(RATIO.vinegar*L)}</span></div>`;document.getElementById('list1').innerHTML=`<div class="ing-row"><span class="ing-name">배양용 물</span><span class="ing-amt">${volUnit(RATIO.water1*L)}</span></div><div class="ing-row"><span class="ing-name">감자전분</span><span class="ing-amt">${wUnit(RATIO.potatoStarch*L)}</span></div><div class="ing-row"><span class="ing-name">부엽토</span><span class="ing-amt">${wUnit(RATIO.humus*L)}</span></div>${saltRow}`;document.getElementById('list2').innerHTML=`<div class="ing-row"><span class="ing-name">데실글루코사이드</span><span class="ing-amt">${volUnit(RATIO.potatoSilkoside*L)}</span></div>`;document.getElementById('list3').innerHTML=`<div class="ing-row"><span class="ing-name">가성가리</span><span class="ing-amt">${wUnit(RATIO.causticPotash*L)}</span></div><div class="ing-row"><span class="ing-name">희석용 물 (동일량)</span><span class="ing-amt">${volUnit(RATIO.water3*L)}</span></div>`;const waterMl=L*1000;const sulfurMinMl=waterMl/1000;const sulfurMaxMl=waterMl/250;const dilRatio=RATIO.maxWaterSulfur/RATIO.jadalSulfur;const sulfurMinDilMl=sulfurMinMl*dilRatio;const sulfurMaxDilMl=sulfurMaxMl*dilRatio;document.getElementById('list4').innerHTML=`<div class="ing-row"><span class="ing-name">자닮유황 (최소~최대)</span><span class="ing-amt">${volUnit(sulfurMinMl)} ~ ${volUnit(sulfurMaxMl)}</span></div><div class="ing-row"><span class="ing-name">자닮유황최대 (희석수)</span><span class="ing-amt">${volUnit(sulfurMinDilMl)} ~ ${volUnit(sulfurMaxDilMl)}</span></div>`;document.getElementById('sulfurCaution').innerHTML=`<div class="caution-note">💡 민감작물(포도, 감, 하우스작물) 여부 확인 후 사용하세요</div>`;document.getElementById('list5').innerHTML=`<div class="ing-row"><span class="ing-name">자닮오일</span><span class="ing-amt">${volUnit(RATIO.jadalOil*L)}</span></div><div class="ing-row"><span class="ing-name">희석수 Max</span><span class="ing-amt">${volUnit(RATIO.maxWaterOil*L)}</span></div>`;const summaryCard=document.getElementById('summaryCard');if(stepState[4]&&stepState[5]){summaryCard.style.display='block';let rows=[];rows.push(`<div class="summary-row"><span>기준 물 용량</span><span>${fmt(L)} L</span></div>`);rows.push(`<div class="summary-row"><span>① 배양 배합액 (${saltChoice==='salt'?'천일염':'바닷물'})</span><span>포함</span></div>`);rows.push(`<div class="summary-row"><span>② 데실글루코사이드</span><span>${volUnit(RATIO.potatoSilkoside*L)}</span></div>`);if(stepState[3])rows.push(`<div class="summary-row"><span>③ 가성가리수용액</span><span>가리 ${wUnit(RATIO.causticPotash*L)} + 물 ${volUnit(RATIO.water3*L)}</span></div>`);rows.push(`<div class="summary-row"><span>④ 살균효과(자닮유황)</span><span>${volUnit(sulfurMinMl)} ~ ${volUnit(sulfurMaxMl)}</span></div>`);rows.push(`<div class="summary-row"><span>⑤ 살충효과(자닮오일)</span><span>${volUnit(RATIO.jadalOil*L)}</span></div>`);document.getElementById('summaryBody').innerHTML=`<div class="final-label">기준 물 ${fmt(L)}L 배합</div><div style="margin-top:10px;">${rows.join('')}</div>`;}else{summaryCard.style.display='none';}}
-buildPresets();onVolumeChange();
+
+function fmt(n){
+  if(n === 0) return "0";
+  let r = Math.round(n*100)/100;
+  return r.toLocaleString('ko-KR', {maximumFractionDigits:2});
+}
+
+// ml -> 보기 좋은 단위로 (1000ml 이상이면 L 표기 병기)
+function volUnit(ml){
+  if(ml >= 1000){
+    return `${fmt(ml)}<small>ml</small> <small>(${fmt(ml/1000)}L)</small>`;
+  }
+  return `${fmt(ml)}<small>ml</small>`;
+}
+function wUnit(g){
+  if(g >= 1000){
+    return `${fmt(g)}<small>g</small> <small>(${fmt(g/1000)}kg)</small>`;
+  }
+  return `${fmt(g)}<small>g</small>`;
+}
+
+const stepState = { 3:false, 4:false, 5:false };
+let saltChoice = 'salt';
+
+function chooseSalt(choice){
+  saltChoice = choice;
+  document.querySelectorAll('.salt-btn').forEach(b=>{
+    b.classList.toggle('active', b.dataset.choice === choice);
+  });
+  render();
+}
+
+
+function buildPresets(){
+  const box = document.getElementById('presets');
+  box.innerHTML = '';
+  PRESETS.forEach(v=>{
+    const b = document.createElement('button');
+    b.textContent = v + 'L';
+    b.onclick = ()=>{ document.getElementById('volumeInput').value = v; onVolumeChange(); };
+    b.dataset.v = v;
+    box.appendChild(b);
+  });
+}
+
+function stepVolume(dir){
+  const input = document.getElementById('volumeInput');
+  let v = parseFloat(input.value) || 0;
+  v = Math.max(0.1, v + dir);
+  input.value = v;
+  onVolumeChange();
+}
+
+function toggleStep(n){
+  stepState[n] = !stepState[n];
+  document.getElementById('toggle'+n).classList.toggle('on', stepState[n]);
+  document.getElementById('body'+n).classList.toggle('show', stepState[n]);
+  render();
+}
+
+function onVolumeChange(){
+  const v = parseFloat(document.getElementById('volumeInput').value) || 0;
+  document.querySelectorAll('#presets button').forEach(b=>{
+    b.classList.toggle('active', parseFloat(b.dataset.v) === v);
+  });
+  render();
+}
+
+function render(){
+  const L = parseFloat(document.getElementById('volumeInput').value) || 0;
+
+  // STEP1
+  const saltRow = saltChoice === 'salt'
+    ? `<div class="ing-row"><span class="ing-name">천일염</span><span class="ing-amt">${wUnit(RATIO.salt*L)}</span></div>`
+    : `<div class="ing-row"><span class="ing-name">바닷물</span><span class="ing-amt">${volUnit(RATIO.vinegar*L)}</span></div>`;
+  document.getElementById('list1').innerHTML = `
+    <div class="ing-row"><span class="ing-name">배양용 물</span><span class="ing-amt">${volUnit(RATIO.water1*L)}</span></div>
+    <div class="ing-row"><span class="ing-name">감자전분</span><span class="ing-amt">${wUnit(RATIO.potatoStarch*L)}</span></div>
+    <div class="ing-row"><span class="ing-name">부엽토</span><span class="ing-amt">${wUnit(RATIO.humus*L)}</span></div>
+    ${saltRow}
+  `;
+
+  // STEP2
+  document.getElementById('list2').innerHTML = `
+    <div class="ing-row"><span class="ing-name">데실글루코사이드</span><span class="ing-amt">${volUnit(RATIO.potatoSilkoside*L)}</span></div>
+  `;
+
+  // STEP3
+  document.getElementById('list3').innerHTML = `
+    <div class="ing-row"><span class="ing-name">가성가리</span><span class="ing-amt">${wUnit(RATIO.causticPotash*L)}</span></div>
+    <div class="ing-row"><span class="ing-name">희석용 물 (동일량)</span><span class="ing-amt">${volUnit(RATIO.water3*L)}</span></div>
+  `;
+
+  // STEP4 - 자닮유황: 최소 1/1000 비율 ~ 최대 1/250 비율로 범위 계산
+  const waterMl = L * 1000;
+  const sulfurMinMl = waterMl / 1000;
+  const sulfurMaxMl = waterMl / 250;
+  const dilRatio = RATIO.maxWaterSulfur / RATIO.jadalSulfur; // 자닮유황:희석수 = 2:3 비례 유지
+  const sulfurMinDilMl = sulfurMinMl * dilRatio;
+  const sulfurMaxDilMl = sulfurMaxMl * dilRatio;
+  document.getElementById('list4').innerHTML = `
+    <div class="ing-row"><span class="ing-name">자닮유황 (최소~최대)</span><span class="ing-amt">${volUnit(sulfurMinMl)} ~ ${volUnit(sulfurMaxMl)}</span></div>
+    <div class="ing-row"><span class="ing-name">자닮유황최대 (희석수)</span><span class="ing-amt">${volUnit(sulfurMinDilMl)} ~ ${volUnit(sulfurMaxDilMl)}</span></div>
+  `;
+  document.getElementById('sulfurCaution').innerHTML = `<div class="caution-note">💡 민감작물(포도, 감, 하우스작물) 여부 확인 후 사용하세요</div>`;
+
+  // STEP5
+  document.getElementById('list5').innerHTML = `
+    <div class="ing-row"><span class="ing-name">자닮오일</span><span class="ing-amt">${volUnit(RATIO.jadalOil*L)}</span></div>
+    <div class="ing-row"><span class="ing-name">희석수 Max</span><span class="ing-amt">${volUnit(RATIO.maxWaterOil*L)}</span></div>
+  `;
+
+  // 요약 (살균+살충 겸용일 때만 표시 = 광범위 살충제 제조)
+  const summaryCard = document.getElementById('summaryCard');
+  if(stepState[4] && stepState[5]){
+    summaryCard.style.display = 'block';
+    let rows = [];
+    rows.push(`<div class="summary-row"><span>기준 물 용량</span><span>${fmt(L)} L</span></div>`);
+    rows.push(`<div class="summary-row"><span>① 배양 배합액 (${saltChoice==='salt'?'천일염':'바닷물'})</span><span>포함</span></div>`);
+    rows.push(`<div class="summary-row"><span>② 데실글루코사이드</span><span>${volUnit(RATIO.potatoSilkoside*L)}</span></div>`);
+    if(stepState[3]) rows.push(`<div class="summary-row"><span>③ 가성가리수용액</span><span>가리 ${wUnit(RATIO.causticPotash*L)} + 물 ${volUnit(RATIO.water3*L)}</span></div>`);
+    rows.push(`<div class="summary-row"><span>④ 살균효과(자닮유황)</span><span>${volUnit(sulfurMinMl)} ~ ${volUnit(sulfurMaxMl)}</span></div>`);
+    rows.push(`<div class="summary-row"><span>⑤ 살충효과(자닮오일)</span><span>${volUnit(RATIO.jadalOil*L)}</span></div>`);
+    document.getElementById('summaryBody').innerHTML = `
+      <div class="final-label">기준 물 ${fmt(L)}L 배합</div>
+      <div style="margin-top:10px;">${rows.join('')}</div>
+    `;
+  } else {
+    summaryCard.style.display = 'none';
+  }
+}
+
+buildPresets();
+onVolumeChange();
 </script>
 </body>
 </html>
