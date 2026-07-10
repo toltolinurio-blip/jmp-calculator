@@ -1,0 +1,624 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>자닮미생물농약(JMP) 제조 비율 계산기</title>
+<style>
+  :root{
+    --soil:#2E2A1F;
+    --soil-2:#413B29;
+    --leaf:#6B8E4E;
+    --leaf-dark:#4C6838;
+    --wheat:#E8C468;
+    --wheat-soft:#F4E4B8;
+    --paper:#FBF8F1;
+    --ink:#241F14;
+    --danger:#B5502C;
+    --line:#D8CDA8;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--soil);
+    color:var(--ink);
+    font-family:"Pretendard","Apple SD Gothic Neo","Malgun Gothic",sans-serif;
+    -webkit-tap-highlight-color:transparent;
+    padding-bottom:40px;
+  }
+  header{
+    background:linear-gradient(160deg, var(--leaf-dark), var(--leaf));
+    padding:22px 18px 26px;
+    color:var(--paper);
+    position:sticky; top:0; z-index:20;
+    box-shadow:0 4px 14px rgba(0,0,0,.25);
+  }
+  header h1{
+    margin:0 0 4px;
+    font-size:1.35rem;
+    font-weight:800;
+    letter-spacing:-0.02em;
+  }
+  header p{
+    margin:0;
+    font-size:.82rem;
+    opacity:.85;
+  }
+  .wrap{
+    max-width:520px;
+    margin:0 auto;
+    padding:16px 14px 0;
+  }
+
+  /* 물용량 입력 카드 */
+  .volume-card{
+    background:var(--paper);
+    border-radius:18px;
+    padding:18px 16px;
+    margin-top:-14px;
+    box-shadow:0 8px 24px rgba(0,0,0,.18);
+    border:1px solid var(--line);
+  }
+  .volume-card .label{
+    font-size:.78rem;
+    font-weight:700;
+    color:var(--leaf-dark);
+    text-transform:uppercase;
+    letter-spacing:.06em;
+    margin-bottom:8px;
+  }
+  .volume-input-row{
+    display:flex;
+    align-items:center;
+    gap:10px;
+  }
+  .volume-input-row button{
+    width:46px; height:46px;
+    border-radius:12px;
+    border:none;
+    background:var(--leaf);
+    color:#fff;
+    font-size:1.4rem;
+    font-weight:700;
+    flex-shrink:0;
+  }
+  .volume-input-row button:active{ background:var(--leaf-dark); }
+  #volumeInput{
+    flex:1;
+    text-align:center;
+    font-size:1.6rem;
+    font-weight:800;
+    border:2px solid var(--line);
+    border-radius:12px;
+    padding:8px 4px;
+    color:var(--ink);
+    min-width:0;
+  }
+  .unit-suffix{
+    font-weight:700;
+    color:var(--soil-2);
+    font-size:1.05rem;
+  }
+  .presets{
+    display:flex;
+    flex-wrap:wrap;
+    gap:6px;
+    margin-top:12px;
+  }
+  .presets button{
+    border:1px solid var(--line);
+    background:#fff;
+    color:var(--soil-2);
+    padding:7px 12px;
+    border-radius:999px;
+    font-size:.8rem;
+    font-weight:600;
+  }
+  .presets button.active{
+    background:var(--wheat);
+    border-color:var(--wheat);
+    color:var(--ink);
+  }
+
+  /* 단계 섹션 */
+  .step{
+    background:var(--paper);
+    border-radius:18px;
+    margin-top:14px;
+    border:1px solid var(--line);
+    overflow:hidden;
+  }
+  .step-head{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    padding:16px;
+  }
+  .step-num{
+    width:30px; height:30px;
+    border-radius:50%;
+    background:var(--leaf-dark);
+    color:#fff;
+    font-weight:800;
+    font-size:.9rem;
+    display:flex; align-items:center; justify-content:center;
+    flex-shrink:0;
+  }
+  .step-title{
+    flex:1;
+    font-weight:800;
+    font-size:1rem;
+    color:var(--ink);
+  }
+  .step-sub{
+    font-size:.74rem;
+    color:#8a7f5f;
+    font-weight:600;
+    margin-top:2px;
+  }
+  .toggle{
+    width:50px; height:28px;
+    border-radius:999px;
+    background:#D8CDA8;
+    position:relative;
+    flex-shrink:0;
+    border:none;
+  }
+  .toggle::after{
+    content:"";
+    position:absolute;
+    top:3px; left:3px;
+    width:22px; height:22px;
+    border-radius:50%;
+    background:#fff;
+    transition:transform .15s ease;
+    box-shadow:0 1px 3px rgba(0,0,0,.3);
+  }
+  .toggle.on{ background:var(--leaf); }
+  .toggle.on::after{ transform:translateX(22px); }
+  .toggle.always{ background:var(--soil-2); opacity:.35; }
+  .toggle.always::after{ transform:translateX(22px); }
+
+  .step-body{
+    padding:0 16px 16px;
+    display:none;
+  }
+  .step-body.show{ display:block; }
+
+  .ing-list{
+    display:flex;
+    flex-direction:column;
+    gap:8px;
+  }
+  .ing-row{
+    display:flex;
+    justify-content:space-between;
+    align-items:baseline;
+    background:var(--wheat-soft);
+    border-radius:10px;
+    padding:10px 12px;
+  }
+  .ing-name{
+    font-size:.88rem;
+    font-weight:700;
+    color:var(--soil-2);
+  }
+  .ing-amt{
+    font-size:1.05rem;
+    font-weight:800;
+    color:var(--ink);
+    white-space:nowrap;
+  }
+  .ing-amt small{
+    font-size:.72rem;
+    font-weight:600;
+    color:#8a7f5f;
+    margin-left:2px;
+  }
+
+  .note{
+    font-size:.76rem;
+    color:#8a7f5f;
+    margin-top:10px;
+    line-height:1.5;
+  }
+
+  .salt-choice{
+    display:flex;
+    gap:8px;
+    margin-bottom:12px;
+  }
+  .salt-btn{
+    flex:1;
+    border:2px solid var(--line);
+    background:#fff;
+    color:var(--soil-2);
+    padding:10px 6px;
+    border-radius:12px;
+    font-size:.85rem;
+    font-weight:700;
+  }
+  .salt-btn.active{
+    background:var(--leaf);
+    border-color:var(--leaf);
+    color:#fff;
+  }
+
+  .range-box{
+    background:var(--wheat-soft);
+    border-radius:12px;
+    padding:12px 14px;
+    margin-bottom:12px;
+  }
+  .range-label{
+    font-size:.85rem;
+    font-weight:700;
+    color:var(--soil-2);
+    margin-bottom:8px;
+  }
+  .range-label span{
+    color:var(--ink);
+    font-weight:900;
+  }
+  .range-box input[type="range"]{
+    width:100%;
+    accent-color:var(--leaf-dark);
+  }
+  .range-scale{
+    display:flex;
+    justify-content:space-between;
+    font-size:.72rem;
+    color:#8a7f5f;
+    margin-top:2px;
+  }
+  .warning{
+    margin-top:10px;
+    background:var(--danger);
+    color:#fff;
+    font-weight:700;
+    font-size:.82rem;
+    padding:8px 10px;
+    border-radius:10px;
+    text-align:center;
+  }
+  .caution-note{
+    margin-top:10px;
+    background:var(--wheat-soft);
+    color:var(--soil-2);
+    font-weight:600;
+    font-size:.78rem;
+    padding:8px 10px;
+    border-radius:10px;
+    text-align:center;
+    border:1px solid var(--wheat);
+  }
+
+  /* 요약 카드 */
+  .summary{
+    background:var(--ink);
+    color:var(--wheat-soft);
+    border-radius:18px;
+    margin-top:16px;
+    padding:18px 16px;
+  }
+  .summary h2{
+    margin:0 0 10px;
+    font-size:1rem;
+    color:var(--wheat);
+  }
+  .summary .final-amt{
+    font-size:1.4rem;
+    font-weight:900;
+    color:#fff;
+  }
+  .summary .final-label{
+    font-size:.8rem;
+    opacity:.8;
+    margin-top:2px;
+  }
+  .summary-row{
+    display:flex;
+    justify-content:space-between;
+    padding:6px 0;
+    border-bottom:1px solid rgba(255,255,255,.12);
+    font-size:.85rem;
+  }
+  .summary-row:last-child{ border-bottom:none; }
+
+  footer{
+    text-align:center;
+    font-size:.72rem;
+    color:#8a9b76;
+    padding:22px 16px 10px;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>🌱 자닮미생물농약(JMP) 제조 비율 계산기</h1>
+  <p>물 용량을 넣고, 필요한 단계만 켜서 배합비를 확인하세요</p>
+</header>
+
+<div class="wrap">
+
+  <!-- 물용량 입력 -->
+  <div class="volume-card">
+    <div class="label">기준 물 용량</div>
+    <div class="volume-input-row">
+      <button onclick="stepVolume(-1)">–</button>
+      <input id="volumeInput" type="number" inputmode="decimal" value="1000" min="0.1" step="1" oninput="onVolumeChange()">
+      <span class="unit-suffix">리터(L)</span>
+      <button onclick="stepVolume(1)">+</button>
+    </div>
+    <div class="presets" id="presets"></div>
+  </div>
+
+  <!-- STEP 1: 기본 배양 (항상 적용) -->
+  <div class="step">
+    <div class="step-head">
+      <div class="step-num">1</div>
+      <div>
+        <div class="step-title">① 감자 미생물 배양</div>
+        <div class="step-sub">기본 배합 · 항상 포함</div>
+      </div>
+      <button class="toggle always" disabled></button>
+    </div>
+    <div class="step-body show" id="body1">
+      <div class="salt-choice" id="saltChoice">
+        <button class="salt-btn active" data-choice="salt" onclick="chooseSalt('salt')">소금 사용</button>
+        <button class="salt-btn" data-choice="seawater" onclick="chooseSalt('seawater')">바닷물 사용</button>
+      </div>
+      <div class="ing-list" id="list1"></div>
+      <div class="note">미생물 배양 전용 통 사용, 자닮오일과 혼합 사용 시 연수(정수/빗물 등) 사용 권장</div>
+    </div>
+  </div>
+
+  <!-- STEP 2: 데실글루코사이드 (①) -->
+  <div class="step">
+    <div class="step-head">
+      <div class="step-num">2</div>
+      <div>
+        <div class="step-title">② 데실글루코사이드</div>
+        <div class="step-sub">① 배합 완료액</div>
+      </div>
+      <button class="toggle always" disabled></button>
+    </div>
+    <div class="step-body show" id="body2">
+      <div class="ing-list" id="list2"></div>
+    </div>
+  </div>
+
+  <!-- STEP 3: 가성가리수용액 -->
+  <div class="step">
+    <div class="step-head" onclick="toggleStep(3)">
+      <div class="step-num">3</div>
+      <div>
+        <div class="step-title">③ 가성가리수용액</div>
+        <div class="step-sub">물 + 가성가리 동일량 (옵션)</div>
+      </div>
+      <button class="toggle" id="toggle3" onclick="event.stopPropagation(); toggleStep(3)"></button>
+    </div>
+    <div class="step-body" id="body3">
+      <div class="ing-list" id="list3"></div>
+    </div>
+  </div>
+
+  <!-- STEP 4: 살균효과 추가 (자닮유황) -->
+  <div class="step">
+    <div class="step-head" onclick="toggleStep(4)">
+      <div class="step-num">4</div>
+      <div>
+        <div class="step-title">④ 살균효과 추가</div>
+        <div class="step-sub">자닮유황 · ①+②+③+④ (옵션) · 50L 초과~500L 이하는 0.5~2L 범위</div>
+      </div>
+      <button class="toggle" id="toggle4" onclick="event.stopPropagation(); toggleStep(4)"></button>
+    </div>
+    <div class="step-body" id="body4">
+      <div id="sulfurRangeBox" class="range-box" style="display:none;">
+        <div class="range-label">자닮유황 사용량 선택 <span id="sulfurRangeVal"></span></div>
+        <input type="range" id="sulfurRange" min="0.5" max="2" step="0.1" value="2" oninput="onSulfurRangeChange()">
+        <div class="range-scale"><span>0.5L</span><span>2L</span></div>
+      </div>
+      <div class="ing-list" id="list4"></div>
+      <div id="sulfurCaution"></div>
+    </div>
+  </div>
+
+  <!-- STEP 5: 살충효과 추가 (자닮오일) -->
+  <div class="step">
+    <div class="step-head" onclick="toggleStep(5)">
+      <div class="step-num">5</div>
+      <div>
+        <div class="step-title">⑤ 살충효과 추가</div>
+        <div class="step-sub">자닮오일 · ①+②+③+⑤ (옵션)</div>
+      </div>
+      <button class="toggle" id="toggle5" onclick="event.stopPropagation(); toggleStep(5)"></button>
+    </div>
+    <div class="step-body" id="body5">
+      <div class="ing-list" id="list5"></div>
+      <div class="note">연수(정수/빗물 등)로 배합 시 미생물 배양 병행 가능</div>
+    </div>
+  </div>
+
+  <!-- 요약 -->
+  <div class="summary">
+    <h2>📋 오늘 배합 요약</h2>
+    <div id="summaryBody"></div>
+  </div>
+
+  <footer>2025년 4월 29일 자닮 조영상대표 공개 기술 기준 · 1L 기준 비율로 자동 환산됩니다<br>제작 : 좌석훈</footer>
+</div>
+
+<script>
+// ── 1L 기준 배합 비율 (표에서 1,2,5,10,20,50,100L 행이 서로 일치하는 값으로 검증됨) ──
+const RATIO = {
+  water1: 1000,     // 배양용 물 (ml)
+  potatoStarch: 1,  // 감자전분 (g)
+  humus: 1,         // 부엽토 (g)
+  salt: 1,          // 소금 (g)
+  vinegar: 40,       // 바닷물 (ml)
+  potatoSilkoside: 2, // ②데실글루코사이드 (ml)
+  causticPotash: 1,   // 가성가리 (g)
+  water3: 1,        // 가성가리 희석수 - 가리와 동일량 (ml)
+  jadalSulfur: 2,      // 자닮유황 (ml)
+  maxWaterSulfur: 3,    // 자닮유황최대 (ml)
+  jadalOil: 10,          // 자닮오일 (ml)
+  maxWaterOil: 20         // 자닮오일 사용시 최대 희석수 (ml)
+};
+
+const PRESETS = [1000,500,400,300,200,100,50,20,10,5,2,1];
+
+function fmt(n){
+  if(n === 0) return "0";
+  let r = Math.round(n*100)/100;
+  return r.toLocaleString('ko-KR', {maximumFractionDigits:2});
+}
+
+// ml -> 보기 좋은 단위로 (1000ml 이상이면 L 표기 병기)
+function volUnit(ml){
+  if(ml >= 1000){
+    return `${fmt(ml)}<small>ml</small> <small>(${fmt(ml/1000)}L)</small>`;
+  }
+  return `${fmt(ml)}<small>ml</small>`;
+}
+function wUnit(g){
+  if(g >= 1000){
+    return `${fmt(g)}<small>g</small> <small>(${fmt(g/1000)}kg)</small>`;
+  }
+  return `${fmt(g)}<small>g</small>`;
+}
+
+const stepState = { 3:false, 4:false, 5:false };
+let saltChoice = 'salt';
+let sulfurManualL = 2;
+
+function chooseSalt(choice){
+  saltChoice = choice;
+  document.querySelectorAll('.salt-btn').forEach(b=>{
+    b.classList.toggle('active', b.dataset.choice === choice);
+  });
+  render();
+}
+
+function onSulfurRangeChange(){
+  sulfurManualL = parseFloat(document.getElementById('sulfurRange').value);
+  render();
+}
+
+function buildPresets(){
+  const box = document.getElementById('presets');
+  box.innerHTML = '';
+  PRESETS.forEach(v=>{
+    const b = document.createElement('button');
+    b.textContent = v + 'L';
+    b.onclick = ()=>{ document.getElementById('volumeInput').value = v; onVolumeChange(); };
+    b.dataset.v = v;
+    box.appendChild(b);
+  });
+}
+
+function stepVolume(dir){
+  const input = document.getElementById('volumeInput');
+  let v = parseFloat(input.value) || 0;
+  v = Math.max(0.1, v + dir);
+  input.value = v;
+  onVolumeChange();
+}
+
+function toggleStep(n){
+  stepState[n] = !stepState[n];
+  document.getElementById('toggle'+n).classList.toggle('on', stepState[n]);
+  document.getElementById('body'+n).classList.toggle('show', stepState[n]);
+  render();
+}
+
+function onVolumeChange(){
+  const v = parseFloat(document.getElementById('volumeInput').value) || 0;
+  document.querySelectorAll('#presets button').forEach(b=>{
+    b.classList.toggle('active', parseFloat(b.dataset.v) === v);
+  });
+  render();
+}
+
+function render(){
+  const L = parseFloat(document.getElementById('volumeInput').value) || 0;
+
+  // STEP1
+  const saltRow = saltChoice === 'salt'
+    ? `<div class="ing-row"><span class="ing-name">소금</span><span class="ing-amt">${wUnit(RATIO.salt*L)}</span></div>`
+    : `<div class="ing-row"><span class="ing-name">바닷물</span><span class="ing-amt">${volUnit(RATIO.vinegar*L)}</span></div>`;
+  document.getElementById('list1').innerHTML = `
+    <div class="ing-row"><span class="ing-name">배양용 물</span><span class="ing-amt">${volUnit(RATIO.water1*L)}</span></div>
+    <div class="ing-row"><span class="ing-name">감자전분</span><span class="ing-amt">${wUnit(RATIO.potatoStarch*L)}</span></div>
+    <div class="ing-row"><span class="ing-name">부엽토</span><span class="ing-amt">${wUnit(RATIO.humus*L)}</span></div>
+    ${saltRow}
+  `;
+
+  // STEP2
+  document.getElementById('list2').innerHTML = `
+    <div class="ing-row"><span class="ing-name">데실글루코사이드 (완료액)</span><span class="ing-amt">${volUnit(RATIO.potatoSilkoside*L)}</span></div>
+  `;
+
+  // STEP3
+  document.getElementById('list3').innerHTML = `
+    <div class="ing-row"><span class="ing-name">가성가리</span><span class="ing-amt">${wUnit(RATIO.causticPotash*L)}</span></div>
+    <div class="ing-row"><span class="ing-name">희석용 물 (동일량)</span><span class="ing-amt">${volUnit(RATIO.water3*L)}</span></div>
+  `;
+
+  // STEP4
+  const sulfurBox = document.getElementById('sulfurRangeBox');
+  let sulfurMl, sulfurMaxMl;
+  if(L > 50 && L <= 500){
+    sulfurBox.style.display = 'block';
+    document.getElementById('sulfurRangeVal').textContent = fmt(sulfurManualL) + 'L';
+    sulfurMl = sulfurManualL * 1000;
+    sulfurMaxMl = sulfurMl * (RATIO.maxWaterSulfur / RATIO.jadalSulfur); // 자닮유황:희석수 = 2:3 비례 유지
+  } else {
+    sulfurBox.style.display = 'none';
+    sulfurMl = RATIO.jadalSulfur * L;
+    sulfurMaxMl = RATIO.maxWaterSulfur * L;
+  }
+  document.getElementById('list4').innerHTML = `
+    <div class="ing-row"><span class="ing-name">자닮유황</span><span class="ing-amt">${volUnit(sulfurMl)}</span></div>
+    <div class="ing-row"><span class="ing-name">자닮유황최대</span><span class="ing-amt">${volUnit(sulfurMaxMl)}</span></div>
+  `;
+  const cautionBox = document.getElementById('sulfurCaution');
+  if(L > 50 && L <= 500 && sulfurManualL <= 0.5){
+    cautionBox.innerHTML = `<div class="warning">⚠️ 0.5L에서 유황 배합시 민감작물 주의! (포도, 감, 하우스작물)</div>`;
+  } else {
+    cautionBox.innerHTML = `<div class="caution-note">💡 민감작물(포도, 감, 하우스작물) 여부 확인 후 사용하세요</div>`;
+  }
+
+  // STEP5
+  document.getElementById('list5').innerHTML = `
+    <div class="ing-row"><span class="ing-name">자닮오일</span><span class="ing-amt">${volUnit(RATIO.jadalOil*L)}</span></div>
+    <div class="ing-row"><span class="ing-name">희석수 Max</span><span class="ing-amt">${volUnit(RATIO.maxWaterOil*L)}</span></div>
+  `;
+
+  // 요약
+  let rows = [];
+  rows.push(`<div class="summary-row"><span>기준 물 용량</span><span>${fmt(L)} L</span></div>`);
+  rows.push(`<div class="summary-row"><span>① 배양 배합액 (${saltChoice==='salt'?'소금':'바닷물'})</span><span>포함</span></div>`);
+  rows.push(`<div class="summary-row"><span>② 데실글루코사이드</span><span>${volUnit(RATIO.potatoSilkoside*L)}</span></div>`);
+  if(stepState[3]) rows.push(`<div class="summary-row"><span>③ 가성가리수용액</span><span>가리 ${wUnit(RATIO.causticPotash*L)} + 물 ${volUnit(RATIO.water3*L)}</span></div>`);
+  if(stepState[4]) rows.push(`<div class="summary-row"><span>④ 살균효과(자닮유황)</span><span>${volUnit(sulfurMl)}${(L>50 && L<=500 && sulfurManualL<=0.5)?' ⚠️민감작물주의':' 💡민감작물확인'}</span></div>`);
+  if(stepState[5]) rows.push(`<div class="summary-row"><span>⑤ 살충효과(자닮오일)</span><span>${volUnit(RATIO.jadalOil*L)}</span></div>`);
+
+  let purpose = "기본 배양액";
+  if(stepState[4] && stepState[5]) purpose = "살균+살충 겸용 살포액";
+  else if(stepState[4]) purpose = "살균 효과 살포액";
+  else if(stepState[5]) purpose = "살충 효과 살포액";
+
+  document.getElementById('summaryBody').innerHTML = `
+    <div class="final-amt">${purpose}</div>
+    <div class="final-label">기준 물 ${fmt(L)}L 배합</div>
+    <div style="margin-top:10px;">${rows.join('')}</div>
+  `;
+}
+
+buildPresets();
+onVolumeChange();
+</script>
+</body>
+</html>
