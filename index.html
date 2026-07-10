@@ -619,7 +619,7 @@ function render(){
   rows.push(`<div class="summary-row"><span>① 배양 배합액 (${saltChoice==='salt'?'천일염':'바닷물'})</span><span>포함</span></div>`);
   rows.push(`<div class="summary-row"><span>② 데실글루코사이드</span><span>${volUnit(RATIO.potatoSilkoside*L)}</span></div>`);
   if(stepState[3]) rows.push(`<div class="summary-row"><span>③ 가성가리수용액</span><span>가리 ${wUnit(RATIO.causticPotash*L)} + 물 ${volUnit(RATIO.water3*L)}</span></div>`);
-  if(stepState[4]) rows.push(`<div class="summary-row"><span>④ 살균효과(자닮유황)</span><span>${volUnit(sulfurMinMl)} ~ ${volUnit(sulfurMaxMl)} 💡민감작물확인</span></div>`);
+  if(stepState[4]) rows.push(`<div class="summary-row"><span>④ 살균효과(자닮유황)</span><span>${volUnit(sulfurMinMl)} ~ ${volUnit(sulfurMaxMl)}</span></div>`);
   if(stepState[5]) rows.push(`<div class="summary-row"><span>⑤ 살충효과(자닮오일)</span><span>${volUnit(RATIO.jadalOil*L)}</span></div>`);
 
   let purpose = "기본 배양액";
