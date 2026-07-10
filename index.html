@@ -49,8 +49,6 @@
     margin:0 auto;
     padding:16px 14px 0;
   }
-
-  /* 물용량 입력 카드 */
   .volume-card{
     background:var(--paper);
     border-radius:18px;
@@ -119,8 +117,6 @@
     border-color:var(--wheat);
     color:var(--ink);
   }
-
-  /* 단계 섹션 */
   .step{
     background:var(--paper);
     border-radius:18px;
@@ -178,13 +174,11 @@
   .toggle.on::after{ transform:translateX(22px); }
   .toggle.always{ background:var(--soil-2); opacity:.35; }
   .toggle.always::after{ transform:translateX(22px); }
-
   .step-body{
     padding:0 16px 16px;
     display:none;
   }
   .step-body.show{ display:block; }
-
   .ing-list{
     display:flex;
     flex-direction:column;
@@ -215,14 +209,6 @@
     color:#8a7f5f;
     margin-left:2px;
   }
-
-  .note{
-    font-size:.76rem;
-    color:#8a7f5f;
-    margin-top:10px;
-    line-height:1.5;
-  }
-
   .salt-choice{
     display:flex;
     gap:8px;
@@ -243,44 +229,6 @@
     border-color:var(--leaf);
     color:#fff;
   }
-
-  .range-box{
-    background:var(--wheat-soft);
-    border-radius:12px;
-    padding:12px 14px;
-    margin-bottom:12px;
-  }
-  .range-label{
-    font-size:.85rem;
-    font-weight:700;
-    color:var(--soil-2);
-    margin-bottom:8px;
-  }
-  .range-label span{
-    color:var(--ink);
-    font-weight:900;
-  }
-  .range-box input[type="range"]{
-    width:100%;
-    accent-color:var(--leaf-dark);
-  }
-  .range-scale{
-    display:flex;
-    justify-content:space-between;
-    font-size:.72rem;
-    color:#8a7f5f;
-    margin-top:2px;
-  }
-  .warning{
-    margin-top:10px;
-    background:var(--danger);
-    color:#fff;
-    font-weight:700;
-    font-size:.82rem;
-    padding:8px 10px;
-    border-radius:10px;
-    text-align:center;
-  }
   .caution-note{
     margin-top:10px;
     background:var(--wheat-soft);
@@ -292,8 +240,6 @@
     text-align:center;
     border:1px solid var(--wheat);
   }
-
-  /* 요약 카드 */
   .summary{
     background:var(--ink);
     color:var(--wheat-soft);
@@ -306,16 +252,6 @@
     font-size:1rem;
     color:var(--wheat);
   }
-  .summary .final-amt{
-    font-size:1.4rem;
-    font-weight:900;
-    color:#fff;
-  }
-  .summary .final-label{
-    font-size:.8rem;
-    opacity:.8;
-    margin-top:2px;
-  }
   .summary-row{
     display:flex;
     justify-content:space-between;
@@ -324,14 +260,12 @@
     font-size:.85rem;
   }
   .summary-row:last-child{ border-bottom:none; }
-
   footer{
     text-align:center;
     font-size:.72rem;
     color:#8a9b76;
     padding:22px 16px 10px;
   }
-
   .promo{
     display:flex;
     align-items:center;
@@ -363,15 +297,11 @@
 </style>
 </head>
 <body>
-
 <header>
   <h1>🌱 자닮미생물농약(JMP) 계산기</h1>
   <p>물 용량을 넣고, 필요한 단계만 켜서 배합비를 확인하세요</p>
 </header>
-
 <div class="wrap">
-
-  <!-- 물용량 입력 -->
   <div class="volume-card">
     <div class="label">기준 물 용량</div>
     <div class="volume-input-row">
@@ -382,8 +312,6 @@
     </div>
     <div class="presets" id="presets"></div>
   </div>
-
-  <!-- STEP 1: 기본 배양 (항상 적용) -->
   <div class="step">
     <div class="step-head">
       <div class="step-num">1</div>
@@ -399,11 +327,8 @@
         <button class="salt-btn" data-choice="seawater" onclick="chooseSalt('seawater')">바닷물 사용</button>
       </div>
       <div class="ing-list" id="list1"></div>
-      <div class="note">미생물 배양 전용 통 사용, 자닮오일과 혼합 사용 시 연수(정수/빗물 등) 사용 권장</div>
     </div>
   </div>
-
-  <!-- STEP 2: 데실글루코사이드 (①) -->
   <div class="step">
     <div class="step-head">
       <div class="step-num">2</div>
@@ -417,8 +342,6 @@
       <div class="ing-list" id="list2"></div>
     </div>
   </div>
-
-  <!-- STEP 3: 가성가리수용액 -->
   <div class="step">
     <div class="step-head" onclick="toggleStep(3)">
       <div class="step-num">3</div>
@@ -432,8 +355,6 @@
       <div class="ing-list" id="list3"></div>
     </div>
   </div>
-
-  <!-- STEP 4: 살균효과 추가 (자닮유황) -->
   <div class="step">
     <div class="step-head" onclick="toggleStep(4)">
       <div class="step-num">4</div>
@@ -448,8 +369,6 @@
       <div id="sulfurCaution"></div>
     </div>
   </div>
-
-  <!-- STEP 5: 살충효과 추가 (자닮오일) -->
   <div class="step">
     <div class="step-head" onclick="toggleStep(5)">
       <div class="step-num">5</div>
@@ -463,179 +382,35 @@
       <div class="ing-list" id="list5"></div>
     </div>
   </div>
-
-  <!-- 요약 -->
-  <div class="summary">
-    <h2>📋 오늘 배합 요약</h2>
+  <div class="summary" id="summaryCard" style="display:none;">
+    <h2>📋 광범위 살충제 제조</h2>
     <div id="summaryBody"></div>
   </div>
-
   <div class="promo">
     <div class="promo-text">
       <div class="promo-title">📺 좌석훈 노래 재생목록</div>
       <div class="promo-sub">QR코드를 스캔하면 바로 이동합니다</div>
     </div>
     <a href="https://youtube.com/playlist?list=PLqHS-sDggR8KoS5KY0rLS01P3XjSAeWnD&si=7iNBKbs4BSfCPIOu" target="_blank" rel="noopener">
-      <img class="promo-qr" src="data:image/png;base64,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FAJIIUBSCJAUAiSFAEkhQFIIkBQCdHS3ydq5eYNz1127c+PK1CPv8Bn9qetOuXPyas2pEEAKAaQQICkESAoBkkKApBAgKQRICgG6drfJ1OaEneveuQti6llNTaqsTc1mfL53cu3O38KaUyGAFAJIIUBSCJAUAiSFAEkhQFIIkBQC9OFuk6/mzi0i52YV7tzIcee2lju3iOx48fM9d12nQgApBJBCgKQQICkESAoBkkKApBAgKQTow2kTd9j/KXfef7/21SZVdkzt21k7N+N05/ahHU6FAFIIIIUASSFAUgiQFAIkhQBJIUBSCFB93/nnqTv713budJ+arpm6O39qFmXnkV98RTumrnvu131nN5wKAaQQQAoBkkKApBAgKQRICgGSQoCkEKDNaZO1F/cbTF13al/Hub0ZO+6cGJl65B3rZ2V+5ndOhQBSCCCFAEkhQFIIkBQCJIUASSFAUgjQ0WmTz+fOfR137hhZm5r6uHN7ydqdsxnn3uepWTKnQgApBJBCgKQQICkESAoBkkKApBAgKQTItMkfNHWX/NRWjTtnBqauu7bzrF7cfPLiLIpTIYAUAkghQFIIkBQCJIUASSFAUgiQFAJ0dNrkzvv+187tvpiaCVnbubP/zj0h517RznXPefF7decsilMhgBQCSCFAUgiQFAIkhQBJIUBSCJAUAlTffv38sfjz1D3059y5V+HO++/XXtypcu77fO66L37r1u6cQ3MqBJBCACkESAoBkkKApBAgKQRICgGSQoA+nDYB+AqcCgGkEEAKAZJCgKQQICkESAoBkkKApBCg+j//KL7WsFh8igAAAABJRU5ErkJggg==" alt="좌석훈 노래 재생목록 QR코드">
+      <img class="promo-qr" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAa4AAAGuCAIAAABHl3XNAAAJQ0lEQVR4nO3dO45dsRFAwSNDO3FgeP+LMRx4EcoEKHGqiBNQVJMzVelg3n3fAwa30d9+/fwRwNf2j+knADBPCgGkEEAKAZJCgKQQICkESAoBkkKA6vv6z//+1z//zvP4a/7z3/8deuT1e7W+7s77fO4VrZ37bpx7r3auu/bis5p6n6esX69TIYAUAkghQFIIkBQCJIUASSFAUgiQFAL04bTJ2tScw9q5u+TP3bs/Nedw7hN8cWLknM/3btz5Pu+8k06FAFIIIIUASSFAUgiQFAIkhQBJIUBSCNDmtMnai/fQ7zznqf9dOzcDMzVdc+cul3PzJHdOE629+Nt3KgSQQgApBEgKAZJCgKQQICkESAoBkkKAjk6bfD7n5ivOTRRMbXq585HvnHKZ2mzD75wKAaQQQAoBkkKApBAgKQRICgGSQoCkECDTJpeYmmRYzyqc208y9cjnJoKmJkamnvPn41QIIIUAUgiQFAIkhQBJIUBSCJAUAiSFAB2dNnEv+99xblZh57ovTl98vu00U7/BF3/7ToUAUggghQBJIUBSCJAUAiSFAEkhQFIIkBQC9OG0yYtzHF7cdbHj3FfnJgrmNr3c+ch3TrlMbbbhd06FAFIIIIUASSFAUgiQFAIkhQBJIUBSCJAUAjS42+TFfQlr687xKc7NKty5b2TH5/M555zVVO/zj06FAFIIIIUASSFAUgiQFAIkhQBJIUBSCNDmtMnaiwF+xjmnD889w1DnvJNOhQBSCCCFAEkhQFIIkBQCJIUASSFAUghQfV//+d/5fwRwNf2j+gnAjCMnAPCVOQGAFAJIIUBSCJAUAiSFAEkhQFIIkBQC9OG0ydrUNIKpTaRePauo06jDrXPPac4oVgAxBIhCgCgEiEKAKASIQoAoBIhCgCgEqL79+vlj+jlc5M75d+f2CKzd2X9d4VQIIIUAUgiQFAIkhQBJIUBSCJAUAiSFAEkhQFIIkBQCJIUASSFAUgiQFAIkhQBJIUBSCJAUAiSFAEkhQFIIkBQCJIUASSFAUgiQFAL0/wCjf1Fo" alt="좌석훈 노래 재생목록 QR코드">
     </a>
   </div>
-
   <footer>2025년 4월 29일 자닮 조영상대표 공개 기술 기준 · 1L 기준 비율로 자동 환산됩니다<br>제작 : 좌석훈</footer>
 </div>
-
 <script>
-// ── 1L 기준 배합 비율 (표에서 1,2,5,10,20,50,100L 행이 서로 일치하는 값으로 검증됨) ──
-const RATIO = {
-  water1: 1000,     // 배양용 물 (ml)
-  potatoStarch: 1,  // 감자전분 (g)
-  humus: 1,         // 부엽토 (g)
-  salt: 1,          // 천일염 (g)
-  vinegar: 40,       // 바닷물 (ml)
-  potatoSilkoside: 2, // ②데실글루코사이드 (ml)
-  causticPotash: 1,   // 가성가리 (g)
-  water3: 1,        // 가성가리 희석수 - 가리와 동일량 (ml)
-  jadalSulfur: 2,      // 자닮유황 (ml)
-  maxWaterSulfur: 3,    // 자닮유황최대 (ml)
-  jadalOil: 10,          // 자닮오일 (ml)
-  maxWaterOil: 20         // 자닮오일 사용시 최대 희석수 (ml)
-};
-
+const RATIO = {water1:1000,potatoStarch:1,humus:1,salt:1,vinegar:40,potatoSilkoside:2,causticPotash:1,water3:1,jadalSulfur:2,maxWaterSulfur:3,jadalOil:10,maxWaterOil:20};
 const PRESETS = [1000,500,400,300,200,100,50,20,10,5,2,1];
-
-function fmt(n){
-  if(n === 0) return "0";
-  let r = Math.round(n*100)/100;
-  return r.toLocaleString('ko-KR', {maximumFractionDigits:2});
-}
-
-// ml -> 보기 좋은 단위로 (1000ml 이상이면 L 표기 병기)
-function volUnit(ml){
-  if(ml >= 1000){
-    return `${fmt(ml)}<small>ml</small> <small>(${fmt(ml/1000)}L)</small>`;
-  }
-  return `${fmt(ml)}<small>ml</small>`;
-}
-function wUnit(g){
-  if(g >= 1000){
-    return `${fmt(g)}<small>g</small> <small>(${fmt(g/1000)}kg)</small>`;
-  }
-  return `${fmt(g)}<small>g</small>`;
-}
-
-const stepState = { 3:false, 4:false, 5:false };
-let saltChoice = 'salt';
-
-function chooseSalt(choice){
-  saltChoice = choice;
-  document.querySelectorAll('.salt-btn').forEach(b=>{
-    b.classList.toggle('active', b.dataset.choice === choice);
-  });
-  render();
-}
-
-
-function buildPresets(){
-  const box = document.getElementById('presets');
-  box.innerHTML = '';
-  PRESETS.forEach(v=>{
-    const b = document.createElement('button');
-    b.textContent = v + 'L';
-    b.onclick = ()=>{ document.getElementById('volumeInput').value = v; onVolumeChange(); };
-    b.dataset.v = v;
-    box.appendChild(b);
-  });
-}
-
-function stepVolume(dir){
-  const input = document.getElementById('volumeInput');
-  let v = parseFloat(input.value) || 0;
-  v = Math.max(0.1, v + dir);
-  input.value = v;
-  onVolumeChange();
-}
-
-function toggleStep(n){
-  stepState[n] = !stepState[n];
-  document.getElementById('toggle'+n).classList.toggle('on', stepState[n]);
-  document.getElementById('body'+n).classList.toggle('show', stepState[n]);
-  render();
-}
-
-function onVolumeChange(){
-  const v = parseFloat(document.getElementById('volumeInput').value) || 0;
-  document.querySelectorAll('#presets button').forEach(b=>{
-    b.classList.toggle('active', parseFloat(b.dataset.v) === v);
-  });
-  render();
-}
-
-function render(){
-  const L = parseFloat(document.getElementById('volumeInput').value) || 0;
-
-  // STEP1
-  const saltRow = saltChoice === 'salt'
-    ? `<div class="ing-row"><span class="ing-name">천일염</span><span class="ing-amt">${wUnit(RATIO.salt*L)}</span></div>`
-    : `<div class="ing-row"><span class="ing-name">바닷물</span><span class="ing-amt">${volUnit(RATIO.vinegar*L)}</span></div>`;
-  document.getElementById('list1').innerHTML = `
-    <div class="ing-row"><span class="ing-name">배양용 물</span><span class="ing-amt">${volUnit(RATIO.water1*L)}</span></div>
-    <div class="ing-row"><span class="ing-name">감자전분</span><span class="ing-amt">${wUnit(RATIO.potatoStarch*L)}</span></div>
-    <div class="ing-row"><span class="ing-name">부엽토</span><span class="ing-amt">${wUnit(RATIO.humus*L)}</span></div>
-    ${saltRow}
-  `;
-
-  // STEP2
-  document.getElementById('list2').innerHTML = `
-    <div class="ing-row"><span class="ing-name">데실글루코사이드</span><span class="ing-amt">${volUnit(RATIO.potatoSilkoside*L)}</span></div>
-  `;
-
-  // STEP3
-  document.getElementById('list3').innerHTML = `
-    <div class="ing-row"><span class="ing-name">가성가리</span><span class="ing-amt">${wUnit(RATIO.causticPotash*L)}</span></div>
-    <div class="ing-row"><span class="ing-name">희석용 물 (동일량)</span><span class="ing-amt">${volUnit(RATIO.water3*L)}</span></div>
-  `;
-
-  // STEP4 - 자닮유황: 최소 1/1000 비율 ~ 최대 1/250 비율로 범위 계산
-  const waterMl = L * 1000;
-  const sulfurMinMl = waterMl / 1000;
-  const sulfurMaxMl = waterMl / 250;
-  const dilRatio = RATIO.maxWaterSulfur / RATIO.jadalSulfur; // 자닮유황:희석수 = 2:3 비례 유지
-  const sulfurMinDilMl = sulfurMinMl * dilRatio;
-  const sulfurMaxDilMl = sulfurMaxMl * dilRatio;
-  document.getElementById('list4').innerHTML = `
-    <div class="ing-row"><span class="ing-name">자닮유황 (최소~최대)</span><span class="ing-amt">${volUnit(sulfurMinMl)} ~ ${volUnit(sulfurMaxMl)}</span></div>
-    <div class="ing-row"><span class="ing-name">자닮유황최대 (희석수)</span><span class="ing-amt">${volUnit(sulfurMinDilMl)} ~ ${volUnit(sulfurMaxDilMl)}</span></div>
-  `;
-  document.getElementById('sulfurCaution').innerHTML = `<div class="caution-note">💡 민감작물(포도, 감, 하우스작물) 여부 확인 후 사용하세요</div>`;
-
-  // STEP5
-  document.getElementById('list5').innerHTML = `
-    <div class="ing-row"><span class="ing-name">자닮오일</span><span class="ing-amt">${volUnit(RATIO.jadalOil*L)}</span></div>
-    <div class="ing-row"><span class="ing-name">희석수 Max</span><span class="ing-amt">${volUnit(RATIO.maxWaterOil*L)}</span></div>
-  `;
-
-  // 요약
-  let rows = [];
-  rows.push(`<div class="summary-row"><span>기준 물 용량</span><span>${fmt(L)} L</span></div>`);
-  rows.push(`<div class="summary-row"><span>① 배양 배합액 (${saltChoice==='salt'?'천일염':'바닷물'})</span><span>포함</span></div>`);
-  rows.push(`<div class="summary-row"><span>② 데실글루코사이드</span><span>${volUnit(RATIO.potatoSilkoside*L)}</span></div>`);
-  if(stepState[3]) rows.push(`<div class="summary-row"><span>③ 가성가리수용액</span><span>가리 ${wUnit(RATIO.causticPotash*L)} + 물 ${volUnit(RATIO.water3*L)}</span></div>`);
-  if(stepState[4]) rows.push(`<div class="summary-row"><span>④ 살균효과(자닮유황)</span><span>${volUnit(sulfurMinMl)} ~ ${volUnit(sulfurMaxMl)}</span></div>`);
-  if(stepState[5]) rows.push(`<div class="summary-row"><span>⑤ 살충효과(자닮오일)</span><span>${volUnit(RATIO.jadalOil*L)}</span></div>`);
-
-  let purpose = "기본 배양액";
-  if(stepState[4] && stepState[5]) purpose = "살균+살충 겸용 살포액";
-  else if(stepState[4]) purpose = "살균 효과 살포액";
-  else if(stepState[5]) purpose = "살충 효과 살포액";
-
-  document.getElementById('summaryBody').innerHTML = `
-    <div class="final-amt">${purpose}</div>
-    <div class="final-label">기준 물 ${fmt(L)}L 배합</div>
-    <div style="margin-top:10px;">${rows.join('')}</div>
-  `;
-}
-
-buildPresets();
-onVolumeChange();
+function fmt(n){if(n===0)return"0";let r=Math.round(n*100)/100;return r.toLocaleString('ko-KR',{maximumFractionDigits:2});}
+function volUnit(ml){if(ml>=1000){return`${fmt(ml)}<small>ml</small> <small>(${fmt(ml/1000)}L)</small>`;}return`${fmt(ml)}<small>ml</small>`;}
+function wUnit(g){if(g>=1000){return`${fmt(g)}<small>g</small> <small>(${fmt(g/1000)}kg)</small>`;}return`${fmt(g)}<small>g</small>`;}
+const stepState={3:false,4:false,5:false};let saltChoice='salt';
+function chooseSalt(choice){saltChoice=choice;document.querySelectorAll('.salt-btn').forEach(b=>{b.classList.toggle('active',b.dataset.choice===choice);});render();}
+function buildPresets(){const box=document.getElementById('presets');box.innerHTML='';PRESETS.forEach(v=>{const b=document.createElement('button');b.textContent=v+'L';b.onclick=()=>{document.getElementById('volumeInput').value=v;onVolumeChange();};b.dataset.v=v;box.appendChild(b);});}
+function stepVolume(dir){const input=document.getElementById('volumeInput');let v=parseFloat(input.value)||0;v=Math.max(0.1,v+dir);input.value=v;onVolumeChange();}
+function toggleStep(n){stepState[n]=!stepState[n];document.getElementById('toggle'+n).classList.toggle('on',stepState[n]);document.getElementById('body'+n).classList.toggle('show',stepState[n]);render();}
+function onVolumeChange(){const v=parseFloat(document.getElementById('volumeInput').value)||0;document.querySelectorAll('#presets button').forEach(b=>{b.classList.toggle('active',parseFloat(b.dataset.v)===v);});render();}
+function render(){const L=parseFloat(document.getElementById('volumeInput').value)||0;const saltRow=saltChoice==='salt'?`<div class="ing-row"><span class="ing-name">천일염</span><span class="ing-amt">${wUnit(RATIO.salt*L)}</span></div>`:`<div class="ing-row"><span class="ing-name">바닷물</span><span class="ing-amt">${volUnit(RATIO.vinegar*L)}</span></div>`;document.getElementById('list1').innerHTML=`<div class="ing-row"><span class="ing-name">배양용 물</span><span class="ing-amt">${volUnit(RATIO.water1*L)}</span></div><div class="ing-row"><span class="ing-name">감자전분</span><span class="ing-amt">${wUnit(RATIO.potatoStarch*L)}</span></div><div class="ing-row"><span class="ing-name">부엽토</span><span class="ing-amt">${wUnit(RATIO.humus*L)}</span></div>${saltRow}`;document.getElementById('list2').innerHTML=`<div class="ing-row"><span class="ing-name">데실글루코사이드</span><span class="ing-amt">${volUnit(RATIO.potatoSilkoside*L)}</span></div>`;document.getElementById('list3').innerHTML=`<div class="ing-row"><span class="ing-name">가성가리</span><span class="ing-amt">${wUnit(RATIO.causticPotash*L)}</span></div><div class="ing-row"><span class="ing-name">희석용 물 (동일량)</span><span class="ing-amt">${volUnit(RATIO.water3*L)}</span></div>`;const waterMl=L*1000;const sulfurMinMl=waterMl/1000;const sulfurMaxMl=waterMl/250;const dilRatio=RATIO.maxWaterSulfur/RATIO.jadalSulfur;const sulfurMinDilMl=sulfurMinMl*dilRatio;const sulfurMaxDilMl=sulfurMaxMl*dilRatio;document.getElementById('list4').innerHTML=`<div class="ing-row"><span class="ing-name">자닮유황 (최소~최대)</span><span class="ing-amt">${volUnit(sulfurMinMl)} ~ ${volUnit(sulfurMaxMl)}</span></div><div class="ing-row"><span class="ing-name">자닮유황최대 (희석수)</span><span class="ing-amt">${volUnit(sulfurMinDilMl)} ~ ${volUnit(sulfurMaxDilMl)}</span></div>`;document.getElementById('sulfurCaution').innerHTML=`<div class="caution-note">💡 민감작물(포도, 감, 하우스작물) 여부 확인 후 사용하세요</div>`;document.getElementById('list5').innerHTML=`<div class="ing-row"><span class="ing-name">자닮오일</span><span class="ing-amt">${volUnit(RATIO.jadalOil*L)}</span></div><div class="ing-row"><span class="ing-name">희석수 Max</span><span class="ing-amt">${volUnit(RATIO.maxWaterOil*L)}</span></div>`;const summaryCard=document.getElementById('summaryCard');if(stepState[4]&&stepState[5]){summaryCard.style.display='block';let rows=[];rows.push(`<div class="summary-row"><span>기준 물 용량</span><span>${fmt(L)} L</span></div>`);rows.push(`<div class="summary-row"><span>① 배양 배합액 (${saltChoice==='salt'?'천일염':'바닷물'})</span><span>포함</span></div>`);rows.push(`<div class="summary-row"><span>② 데실글루코사이드</span><span>${volUnit(RATIO.potatoSilkoside*L)}</span></div>`);if(stepState[3])rows.push(`<div class="summary-row"><span>③ 가성가리수용액</span><span>가리 ${wUnit(RATIO.causticPotash*L)} + 물 ${volUnit(RATIO.water3*L)}</span></div>`);rows.push(`<div class="summary-row"><span>④ 살균효과(자닮유황)</span><span>${volUnit(sulfurMinMl)} ~ ${volUnit(sulfurMaxMl)}</span></div>`);rows.push(`<div class="summary-row"><span>⑤ 살충효과(자닮오일)</span><span>${volUnit(RATIO.jadalOil*L)}</span></div>`);document.getElementById('summaryBody').innerHTML=`<div class="final-label">기준 물 ${fmt(L)}L 배합</div><div style="margin-top:10px;">${rows.join('')}</div>`;}else{summaryCard.style.display='none';}}
+buildPresets();onVolumeChange();
 </script>
 </body>
 </html>
