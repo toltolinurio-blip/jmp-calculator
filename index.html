@@ -178,6 +178,7 @@
   .toggle.on::after{ transform:translateX(22px); }
   .toggle.always{ background:var(--soil-2); opacity:.35; }
   .toggle.always::after{ transform:translateX(22px); }
+  .toggle.locked{ background:#D8CDA8; opacity:.4; cursor:not-allowed; }
 
   .step-body{
     padding:0 16px 16px;
@@ -402,28 +403,28 @@
     </div>
   </div>
 
-  <!-- STEP 2: 데실글루코사이드 (①) -->
+  <!-- STEP 2: 데실글루코사이드 추가 -->
   <div class="step">
-    <div class="step-head">
+    <div class="step-head" onclick="toggleStep(2)">
       <div class="step-num">2</div>
       <div>
-        <div class="step-title">② 데실글루코사이드</div>
-        <div class="step-sub">① 배합 완료액</div>
+        <div class="step-title">② 데실글루코사이드 추가</div>
+        <div class="step-sub">① 배합 완료액 (옵션)</div>
       </div>
-      <button class="toggle always" disabled></button>
+      <button class="toggle" id="toggle2" onclick="event.stopPropagation(); toggleStep(2)"></button>
     </div>
-    <div class="step-body show" id="body2">
+    <div class="step-body" id="body2">
       <div class="ing-list" id="list2"></div>
     </div>
   </div>
 
-  <!-- STEP 3: 가성가리수용액 -->
+  <!-- STEP 3: 수산화칼륨 수용액 추가 -->
   <div class="step">
     <div class="step-head" onclick="toggleStep(3)">
       <div class="step-num">3</div>
       <div>
-        <div class="step-title">③ 가성가리수용액</div>
-        <div class="step-sub">물 + 가성가리 동일량 (옵션)</div>
+        <div class="step-title">③ 수산화칼륨 수용액 추가</div>
+        <div class="step-sub" id="step3sub">물 + 수산화칼륨 동일량 (옵션)</div>
       </div>
       <button class="toggle" id="toggle3" onclick="event.stopPropagation(); toggleStep(3)"></button>
     </div>
@@ -432,13 +433,13 @@
     </div>
   </div>
 
-  <!-- STEP 4: 살균효과 추가 (자닮유황) -->
+  <!-- STEP 4: 자닮유황 추가 (③ 필수) -->
   <div class="step">
     <div class="step-head" onclick="toggleStep(4)">
       <div class="step-num">4</div>
       <div>
-        <div class="step-title">④ 살균효과 추가</div>
-        <div class="step-sub">자닮유황 · ①+②+③+④ (옵션)</div>
+        <div class="step-title">④ 자닮유황 추가</div>
+        <div class="step-sub" id="step4sub">①+②+③+④ (옵션 · ③ 선택 필요)</div>
       </div>
       <button class="toggle" id="toggle4" onclick="event.stopPropagation(); toggleStep(4)"></button>
     </div>
@@ -448,24 +449,9 @@
     </div>
   </div>
 
-  <!-- STEP 5: 살충효과 추가 (자닮오일) -->
-  <div class="step">
-    <div class="step-head" onclick="toggleStep(5)">
-      <div class="step-num">5</div>
-      <div>
-        <div class="step-title">⑤ 살충효과 추가</div>
-        <div class="step-sub">자닮오일 · ①+②+③+⑤ (옵션)</div>
-      </div>
-      <button class="toggle" id="toggle5" onclick="event.stopPropagation(); toggleStep(5)"></button>
-    </div>
-    <div class="step-body" id="body5">
-      <div class="ing-list" id="list5"></div>
-    </div>
-  </div>
-
-  <!-- 요약 (살균+살충 겸용일 때만 표시) -->
+  <!-- 요약 (② 또는 ④ 옵션 활성화 시 표시) -->
   <div class="summary" id="summaryCard" style="display:none;">
-    <h2>📋 광범위 살충제 제조</h2>
+    <h2 id="summaryTitle">📋 광범위 살충제 제조</h2>
     <div id="summaryBody"></div>
   </div>
 
@@ -491,12 +477,10 @@ const RATIO = {
   salt: 1,          // 천일염 (g)
   vinegar: 40,       // 바닷물 (ml)
   potatoSilkoside: 2, // ②데실글루코사이드 (ml)
-  causticPotash: 1,   // 가성가리 (g)
-  water3: 1,        // 가성가리 희석수 - 가리와 동일량 (ml)
-  jadalSulfur: 2,      // 자닮유황 (ml)
-  maxWaterSulfur: 3,    // 자닮유황최대 (ml)
-  jadalOil: 10,          // 자닮오일 (ml)
-  maxWaterOil: 20         // 자닮오일 사용시 최대 희석수 (ml)
+  causticPotash: 1,   // 수산화칼륨 (g)
+  water3: 1,        // 수산화칼륨 희석수 - 동일량 (ml)
+  jadalSulfur: 2,      // 자닮유황 (ml, 참고용 기본비율)
+  maxWaterSulfur: 3    // 자닮유황최대 (ml, 참고용 기본비율)
 };
 
 const PRESETS = [1000,500,400,300,200,100,50,20,10,5,2,1];
@@ -521,7 +505,7 @@ function wUnit(g){
   return `${fmt(g)}<small>g</small>`;
 }
 
-const stepState = { 3:false, 4:false, 5:false };
+const stepState = { 2:false, 3:false, 4:false };
 let saltChoice = 'salt';
 
 function chooseSalt(choice){
@@ -554,10 +538,61 @@ function stepVolume(dir){
 }
 
 function toggleStep(n){
+  if(n === 3 && !stepState[2] && !stepState[3]){
+    // ② 데실글루코사이드 추가를 켜지 않으면 ③ 수산화칼륨 수용액을 켤 수 없음
+    return;
+  }
+  if(n === 4 && !stepState[3] && !stepState[4]){
+    // ③ 수산화칼륨 수용액을 켜지 않으면 ④ 자닮유황을 켤 수 없음
+    return;
+  }
   stepState[n] = !stepState[n];
   document.getElementById('toggle'+n).classList.toggle('on', stepState[n]);
   document.getElementById('body'+n).classList.toggle('show', stepState[n]);
+
+  if(n === 2 && !stepState[2]){
+    // ②를 끄면 ③, ④도 자동으로 꺼짐
+    if(stepState[3]){
+      stepState[3] = false;
+      document.getElementById('toggle3').classList.remove('on');
+      document.getElementById('body3').classList.remove('show');
+    }
+    if(stepState[4]){
+      stepState[4] = false;
+      document.getElementById('toggle4').classList.remove('on');
+      document.getElementById('body4').classList.remove('show');
+    }
+  }
+  if(n === 3 && !stepState[3] && stepState[4]){
+    // ③을 끄면 ④도 자동으로 꺼짐
+    stepState[4] = false;
+    document.getElementById('toggle4').classList.remove('on');
+    document.getElementById('body4').classList.remove('show');
+  }
+  updateLocks();
   render();
+}
+
+function updateLocks(){
+  const toggle3 = document.getElementById('toggle3');
+  const sub3 = document.getElementById('step3sub');
+  if(stepState[2]){
+    toggle3.classList.remove('locked');
+    sub3.textContent = '물 + 수산화칼륨 동일량 (옵션)';
+  } else {
+    toggle3.classList.add('locked');
+    sub3.textContent = '물 + 수산화칼륨 동일량 (옵션 · ② 선택 필요)';
+  }
+
+  const toggle4 = document.getElementById('toggle4');
+  const sub4 = document.getElementById('step4sub');
+  if(stepState[3]){
+    toggle4.classList.remove('locked');
+    sub4.textContent = '①+②+③+④ (옵션)';
+  } else {
+    toggle4.classList.add('locked');
+    sub4.textContent = '①+②+③+④ (옵션 · ③ 선택 필요)';
+  }
 }
 
 function onVolumeChange(){
@@ -589,7 +624,7 @@ function render(){
 
   // STEP3
   document.getElementById('list3').innerHTML = `
-    <div class="ing-row"><span class="ing-name">가성가리</span><span class="ing-amt">${wUnit(RATIO.causticPotash*L)}</span></div>
+    <div class="ing-row"><span class="ing-name">수산화칼륨</span><span class="ing-amt">${wUnit(RATIO.causticPotash*L)}</span></div>
     <div class="ing-row"><span class="ing-name">희석용 물 (동일량)</span><span class="ing-amt">${volUnit(RATIO.water3*L)}</span></div>
   `;
 
@@ -597,32 +632,34 @@ function render(){
   const waterMl = L * 1000;
   const sulfurMinMl = waterMl / 1000;
   const sulfurMaxMl = waterMl / 250;
-  const dilRatio = RATIO.maxWaterSulfur / RATIO.jadalSulfur; // 자닮유황:희석수 = 2:3 비례 유지
-  const sulfurMinDilMl = sulfurMinMl * dilRatio;
-  const sulfurMaxDilMl = sulfurMaxMl * dilRatio;
   document.getElementById('list4').innerHTML = `
     <div class="ing-row"><span class="ing-name">자닮유황 (최소~최대)</span><span class="ing-amt">${volUnit(sulfurMinMl)} ~ ${volUnit(sulfurMaxMl)}</span></div>
-    <div class="ing-row"><span class="ing-name">자닮유황최대 (희석수)</span><span class="ing-amt">${volUnit(sulfurMinDilMl)} ~ ${volUnit(sulfurMaxDilMl)}</span></div>
   `;
   document.getElementById('sulfurCaution').innerHTML = `<div class="caution-note">💡 민감작물(포도, 감, 하우스작물) 여부 확인 후 사용하세요</div>`;
 
-  // STEP5
-  document.getElementById('list5').innerHTML = `
-    <div class="ing-row"><span class="ing-name">자닮오일</span><span class="ing-amt">${volUnit(RATIO.jadalOil*L)}</span></div>
-    <div class="ing-row"><span class="ing-name">희석수 Max</span><span class="ing-amt">${volUnit(RATIO.maxWaterOil*L)}</span></div>
-  `;
-
-  // 요약 (살균+살충 겸용일 때만 표시 = 광범위 살충제 제조)
+  // 요약
   const summaryCard = document.getElementById('summaryCard');
-  if(stepState[4] && stepState[5]){
+  const summaryTitle = document.getElementById('summaryTitle');
+  if(stepState[4]){
     summaryCard.style.display = 'block';
+    summaryTitle.textContent = '📋 광범위 살충·살균제 제조';
+    let rows = [];
+    rows.push(`<div class="summary-row"><span>기준 물 용량</span><span>${fmt(L)} L</span></div>`);
+    rows.push(`<div class="summary-row"><span>① 배양 배합액 (${saltChoice==='salt'?'천일염':'바닷물'})</span><span>포함</span></div>`);
+    if(stepState[2]) rows.push(`<div class="summary-row"><span>② 데실글루코사이드</span><span>${volUnit(RATIO.potatoSilkoside*L)}</span></div>`);
+    rows.push(`<div class="summary-row"><span>③ 수산화칼륨 수용액</span><span>수산화칼륨 ${wUnit(RATIO.causticPotash*L)} + 물 ${volUnit(RATIO.water3*L)}</span></div>`);
+    rows.push(`<div class="summary-row"><span>④ 자닮유황</span><span>${volUnit(sulfurMinMl)} ~ ${volUnit(sulfurMaxMl)}</span></div>`);
+    document.getElementById('summaryBody').innerHTML = `
+      <div class="final-label">기준 물 ${fmt(L)}L 배합</div>
+      <div style="margin-top:10px;">${rows.join('')}</div>
+    `;
+  } else if(stepState[2]){
+    summaryCard.style.display = 'block';
+    summaryTitle.textContent = '📋 광범위 살충제 제조';
     let rows = [];
     rows.push(`<div class="summary-row"><span>기준 물 용량</span><span>${fmt(L)} L</span></div>`);
     rows.push(`<div class="summary-row"><span>① 배양 배합액 (${saltChoice==='salt'?'천일염':'바닷물'})</span><span>포함</span></div>`);
     rows.push(`<div class="summary-row"><span>② 데실글루코사이드</span><span>${volUnit(RATIO.potatoSilkoside*L)}</span></div>`);
-    if(stepState[3]) rows.push(`<div class="summary-row"><span>③ 가성가리수용액</span><span>가리 ${wUnit(RATIO.causticPotash*L)} + 물 ${volUnit(RATIO.water3*L)}</span></div>`);
-    rows.push(`<div class="summary-row"><span>④ 살균효과(자닮유황)</span><span>${volUnit(sulfurMinMl)} ~ ${volUnit(sulfurMaxMl)}</span></div>`);
-    rows.push(`<div class="summary-row"><span>⑤ 살충효과(자닮오일)</span><span>${volUnit(RATIO.jadalOil*L)}</span></div>`);
     document.getElementById('summaryBody').innerHTML = `
       <div class="final-label">기준 물 ${fmt(L)}L 배합</div>
       <div style="margin-top:10px;">${rows.join('')}</div>
@@ -633,6 +670,7 @@ function render(){
 }
 
 buildPresets();
+updateLocks();
 onVolumeChange();
 </script>
 </body>
